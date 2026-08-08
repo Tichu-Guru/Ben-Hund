@@ -380,6 +380,7 @@ html,body{height:100%;font-family:'Crimson Pro',serif;background:var(--bg);color
   <div class="setup-box">
     <div class="game-title">BEN HUND</div>
     <div class="game-sub">A BZF Trick-Taking Game</div>
+    <div style="font-family:'Cinzel',serif;font-size:0.45rem;color:var(--text3);letter-spacing:3px;text-align:center;margin-bottom:16px;">v1.0</div>
     <div class="setup-label">NUMBER OF PLAYERS</div>
     <div class="player-count-row">
       <button class="pc-btn" onclick="setPC(3)">3</button>
@@ -548,20 +549,21 @@ html,body{height:100%;font-family:'Crimson Pro',serif;background:var(--bg);color
 const SUITS = ['Cups','Swords','Staffs','Clover','Moon','Sun'];
 const SUIT_ICONS = {Cups:'♥',Swords:'⚔',Staffs:'♦',Clover:'♣',Moon:'☾',Sun:'☀'};
 const RANK_INFO = {
-  1: {name:'Ace',   display:'A',  count:3, cat:'Star',   vp:5,   vpLabel:'★',  vpType:'star'},
-  2: {name:'2',     display:'2',  count:1, cat:'Star',   vp:10,  vpLabel:'★★', vpType:'star'},
-  3: {name:'3',     display:'3',  count:1, cat:'Arrow',  vp:5,   vpLabel:'▲',  vpType:'arrow'},
-  4: {name:'4',     display:'4',  count:1, cat:'Neutral',vp:0,   vpLabel:'',   vpType:'none'},
-  5: {name:'5',     display:'5',  count:1, cat:'Arrow',  vp:5,   vpLabel:'▲',  vpType:'arrow'},
-  6: {name:'6',     display:'6',  count:1, cat:'Skull',  vp:-5,  vpLabel:'☠',  vpType:'skull'},
-  7: {name:'7',     display:'7',  count:3, cat:'Arrow',  vp:5,   vpLabel:'▲',  vpType:'arrow'},
-  8: {name:'8',     display:'8',  count:1, cat:'Neutral',vp:0,   vpLabel:'',   vpType:'none'},
-  9: {name:'9',     display:'9',  count:1, cat:'Skull',  vp:-5,  vpLabel:'☠',  vpType:'skull'},
-  10:{name:'10',    display:'10', count:1, cat:'Neutral',vp:0,   vpLabel:'',   vpType:'none'},
-  11:{name:'Page',  display:'Pg', count:2, cat:'Star',   vp:5,   vpLabel:'★',  vpType:'star'},
-  12:{name:'Knight',display:'Kn', count:1, cat:'Skull',  vp:-5,  vpLabel:'☠',  vpType:'skull'},
-  13:{name:'Queen', display:'Q',  count:1, cat:'Neutral',vp:0,   vpLabel:'',   vpType:'none'},
-  14:{name:'King',  display:'K',  count:1, cat:'Arrow',  vp:5,   vpLabel:'▲',  vpType:'arrow'},
+  // Ben Mu deck — 5s×3, 8s×3, Pages×2; dual VP on ranks 2 and 9
+  1: {name:'Ace',   display:'A',  count:1, cat:'Star',        starVP:10, arrowVP:0,  skullVP:0,  vpLabel:'★',  vpType:'star'},
+  2: {name:'2',     display:'2',  count:1, cat:'Star+Arrow',  starVP:5,  arrowVP:5,  skullVP:0,  vpLabel:'★▲', vpType:'dual-star-arrow'},
+  3: {name:'3',     display:'3',  count:1, cat:'Arrow',       starVP:0,  arrowVP:5,  skullVP:0,  vpLabel:'▲',  vpType:'arrow'},
+  4: {name:'4',     display:'4',  count:1, cat:'Neutral',     starVP:0,  arrowVP:0,  skullVP:0,  vpLabel:'',   vpType:'none'},
+  5: {name:'5',     display:'5',  count:3, cat:'Neutral',     starVP:0,  arrowVP:0,  skullVP:0,  vpLabel:'',   vpType:'none'},
+  6: {name:'6',     display:'6',  count:1, cat:'Arrow',       starVP:0,  arrowVP:5,  skullVP:0,  vpLabel:'▲',  vpType:'arrow'},
+  7: {name:'7',     display:'7',  count:1, cat:'Skull',       starVP:0,  arrowVP:0,  skullVP:-5, vpLabel:'☠',  vpType:'skull'},
+  8: {name:'8',     display:'8',  count:3, cat:'Neutral',     starVP:0,  arrowVP:0,  skullVP:0,  vpLabel:'',   vpType:'none'},
+  9: {name:'9',     display:'9',  count:1, cat:'Star+Skull',  starVP:5,  arrowVP:0,  skullVP:-5, vpLabel:'★☠', vpType:'dual-star-skull'},
+  10:{name:'10',    display:'10', count:1, cat:'Neutral',     starVP:0,  arrowVP:0,  skullVP:0,  vpLabel:'',   vpType:'none'},
+  11:{name:'Page',  display:'Pg', count:2, cat:'Star',        starVP:5,  arrowVP:0,  skullVP:0,  vpLabel:'★',  vpType:'star'},
+  12:{name:'Knight',display:'Kn', count:1, cat:'Skull',       starVP:0,  arrowVP:0,  skullVP:-5, vpLabel:'☠',  vpType:'skull'},
+  13:{name:'Queen', display:'Q',  count:1, cat:'Neutral',     starVP:0,  arrowVP:0,  skullVP:0,  vpLabel:'',   vpType:'none'},
+  14:{name:'King',  display:'K',  count:1, cat:'Neutral',     starVP:0,  arrowVP:0,  skullVP:0,  vpLabel:'',   vpType:'none'},
 };
 
 // Ranks per player count (non-Joker)
@@ -574,10 +576,11 @@ const RANKS_BY_PC = {
 
 // Eligible pivot ranks per player count
 const PIVOT_ELIGIBLE = {
-  3: [2,4],
-  4: [1,2,4],
-  5: [1,2,4,8,10,11,13],
-  6: [1,2,4,8,10,11,13],
+  // Ben Mu: eligible = Star or Neutral. Dual-VP cards (2, 9) included — have Star component.
+  3: [2,4,5],           // ranks 2-6 present; 2=Star+Arrow, 4=Neutral, 5=Neutral
+  4: [1,2,4,5],         // ranks 1-7; adds Ace(Star)
+  5: [1,2,4,5,8,9,10,11,13], // full deck; adds 8,9,10,11(Page),13(Queen)
+  6: [1,2,4,5,8,9,10,11,13],
 };
 
 const EFFECTS = ['Trump','Plus','Lead','Minus','Chooser','Jokers'];
@@ -668,12 +671,13 @@ function buildDeck(numPlayers) {
 }
 
 function getRanksForPC(pc) {
+  // Ben Mu deck: 5s×3, 8s×3, Pages(11)×2, all others×1
   const out = [];
   const rankList = pc <= 3 ? [2,3,4,5,6] : pc === 4 ? [1,2,3,4,5,6,7] : [1,2,3,4,5,6,7,8,9,10,11,12,13,14];
   for (const r of rankList) {
     const info = RANK_INFO[r];
     if (!info) continue;
-    const cnt = (pc === 4 && (r===1||r===7)) ? 3 : (pc>=5 && (r===1||r===7)) ? 3 : (pc>=5 && r===11) ? 2 : 1;
+    const cnt = info.count || 1;
     for (let i=0;i<cnt;i++) out.push(r);
   }
   return out;
@@ -804,9 +808,9 @@ function renderCard(card, opts={}) {
   if (card.isJoker) {
     rankStr = card.jokerType||'?';
     suitIcon = SUIT_ICONS[card.suit]||'';
-    vpStrip = card.jokerType==='TD' ? '▲' : '☠';
+    vpStrip = card.jokerType==='TD' ? '▲' : '▲☠';
     vpFace = vpStrip;
-    vpColor = card.jokerType==='TD' ? 'var(--vp-arrow)' : 'var(--vp-skull)';
+    vpColor = card.jokerType==='TD' ? 'var(--vp-arrow)' : 'var(--vp-bonus)';
     isArrow = card.jokerType==='TD';
   } else {
     const ri = RANK_INFO[card.rank];
@@ -814,9 +818,11 @@ function renderCard(card, opts={}) {
     suitIcon = SUIT_ICONS[card.suit];
     vpStrip = ri.vpLabel||'';
     vpFace = vpStrip;
-    if(ri.vpType==='star') vpColor='var(--vp-star)';
-    else if(ri.vpType==='arrow'){vpColor='var(--vp-arrow)';isArrow=true;}
-    else if(ri.vpType==='skull') vpColor='var(--vp-skull)';
+    if(ri.starVP>0&&ri.arrowVP>0) vpColor='var(--vp-bonus)'; // dual star+arrow
+    else if(ri.starVP>0&&ri.skullVP<0) vpColor='var(--vp-bonus)'; // dual star+skull
+    else if(ri.starVP>0) vpColor='var(--vp-star)';
+    else if(ri.arrowVP>0){vpColor='var(--vp-arrow)';isArrow=true;}
+    else if(ri.skullVP<0) vpColor='var(--vp-skull)';
     isWide = rankStr.length > 2;
   }
   const isPivot = !card.isJoker && G.pivotRank && card.rank===G.pivotRank;
@@ -1675,13 +1681,15 @@ function resolveTrick() {
     const activeCard=tc.replacedBy||tc.card;
     const scorer=G.players[tc.playerIdx];
     // Star VP: scored by the player who played the card, if still in trick at resolution
-    if(!tc.replaced && !activeCard.isJoker && RANK_INFO[activeCard.rank]&&RANK_INFO[activeCard.rank].vpType==='star'){
-      const cardKey=activeCard.id;
-      if(!G.starScoredIds.has(cardKey)){
-        const starVP=RANK_INFO[activeCard.rank].vp;
-        G.cumVP[scorer.id]+=starVP;
-        G.starScoredIds.add(cardKey);
-        addLog(`${scorer.name} scores +${starVP}★ (${RANK_INFO[activeCard.rank].name} of ${activeCard.suit})`,'good');
+    if(!tc.replaced && !activeCard.isJoker){
+      const ri=RANK_INFO[activeCard.rank];
+      if(ri && ri.starVP>0){
+        const cardKey=activeCard.id;
+        if(!G.starScoredIds.has(cardKey)){
+          G.cumVP[scorer.id]+=ri.starVP;
+          G.starScoredIds.add(cardKey);
+          addLog(`${scorer.name} scores +${ri.starVP}★ (${ri.name} of ${activeCard.suit})`,'good');
+        }
       }
     }
   });
@@ -1816,42 +1824,54 @@ function computeScores() {
     total:0,
   }));
 
-  // Arrow and Skull: pool by team, split evenly
+  // ── ARROW VP: pool by team, every member scores the full cumulative total ──
   ['A','B'].forEach(team=>{
     const members=G.players.filter(p=>p.team===team);
     if(members.length===0) return;
-    const lead=members.find(p=>p.isLead)||members[0];
-    let arrowTotal=0, skullTotal=0;
+    let arrowTotal=0;
     members.forEach(p=>{
+      // Captured cards
       p.capturedCards.forEach(c=>{
         if(c.isJoker){
           if(c.jokerType==='TD') arrowTotal+=5;
-          else skullTotal+=5;
+          else arrowTotal+=5; // TC also contributes +5↑ to team Arrow pool
         } else if(RANK_INFO[c.rank]){
-          if(RANK_INFO[c.rank].vpType==='arrow') arrowTotal+=5;
-          if(RANK_INFO[c.rank].vpType==='skull') skullTotal+=5;
+          const ri=RANK_INFO[c.rank];
+          if(ri.arrowVP>0) arrowTotal+=ri.arrowVP;
         }
       });
-    });
-    // Also count BT Jokers (should be empty but just in case)
-    members.forEach(p=>{
+      // BT cards (should be empty at end of hand, safety check)
       p.bt.forEach(c=>{
         if(c.isJoker){
           if(c.jokerType==='TD') arrowTotal+=5;
-          else skullTotal+=5;
+          else arrowTotal+=5;
+        } else if(RANK_INFO[c.rank]){
+          if(RANK_INFO[c.rank].arrowVP>0) arrowTotal+=RANK_INFO[c.rank].arrowVP;
         }
       });
     });
-    // Split arrow
-    const arrowShare=Math.floor(arrowTotal/members.length);
-    const arrowRem=arrowTotal%(members.length);
-    members.forEach(p=>{ breakdowns[p.id].arrow=arrowShare; });
-    if(arrowRem>0) breakdowns[lead.id].arrow+=arrowRem;
-    // Split skull (negative)
-    const skullShare=Math.floor(skullTotal/members.length);
-    const skullRem=skullTotal%(members.length);
-    members.forEach(p=>{ breakdowns[p.id].skull=-skullShare; });
-    if(skullRem>0) breakdowns[lead.id].skull-=skullRem;
+    // Every team member scores the full Arrow total (no splitting)
+    members.forEach(p=>{ breakdowns[p.id].arrow=arrowTotal; });
+  });
+
+  // ── SKULL VP: individual only — each player penalised by their own captured Skulls ──
+  G.players.forEach(p=>{
+    let skullTotal=0;
+    p.capturedCards.forEach(c=>{
+      if(c.isJoker){
+        if(c.jokerType==='TC') skullTotal+=5; // TC: -5☠ to holder
+      } else if(RANK_INFO[c.rank]){
+        const ri=RANK_INFO[c.rank];
+        if(ri.skullVP<0) skullTotal+=Math.abs(ri.skullVP);
+      }
+    });
+    // BT safety check
+    p.bt.forEach(c=>{
+      if(c.isJoker&&c.jokerType==='TC') skullTotal+=5;
+      else if(!c.isJoker&&RANK_INFO[c.rank]&&RANK_INFO[c.rank].skullVP<0)
+        skullTotal+=Math.abs(RANK_INFO[c.rank].skullVP);
+    });
+    breakdowns[p.id].skull=-skullTotal;
   });
 
   // Plus suit: who has most?
@@ -2144,9 +2164,9 @@ function aiPlayR1(player) {
 
   // Separate card pools
   const jokers = legal.filter(c=>c.isJoker);
-  const stars = legal.filter(c=>!c.isJoker && RANK_INFO[c.rank]&&RANK_INFO[c.rank].vpType==='star');
-  const arrows = legal.filter(c=>!c.isJoker && RANK_INFO[c.rank]&&RANK_INFO[c.rank].vpType==='arrow');
-  const skulls = legal.filter(c=>!c.isJoker && RANK_INFO[c.rank]&&RANK_INFO[c.rank].vpType==='skull');
+  const stars = legal.filter(c=>!c.isJoker && RANK_INFO[c.rank]&&RANK_INFO[c.rank].starVP>0);
+  const arrows = legal.filter(c=>!c.isJoker && RANK_INFO[c.rank]&&RANK_INFO[c.rank].arrowVP>0&&RANK_INFO[c.rank].starVP===0);
+  const skulls = legal.filter(c=>!c.isJoker && RANK_INFO[c.rank]&&RANK_INFO[c.rank].skullVP<0&&RANK_INFO[c.rank].starVP===0);
   const neutrals = legal.filter(c=>!c.isJoker && RANK_INFO[c.rank]&&RANK_INFO[c.rank].vpType==='none');
   const trumpCards = legal.filter(c=>!c.isJoker && c.suit===G.trumpSuit);
   const minusCards = legal.filter(c=>!c.isJoker && c.suit===G.minusSuit);
