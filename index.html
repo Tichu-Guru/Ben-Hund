@@ -245,7 +245,7 @@ html,body{height:100%;font-family:'Crimson Pro',serif;background:var(--bg);color
   justify-content:space-between;padding:3px 2px;width:var(--strip-w);flex-shrink:0;}
 .bzf-c-strip-rank{font-size:11px;font-weight:900;line-height:1;color:rgba(255,255,255,0.95);}
 .bzf-c-strip-suit{font-size:11.5px;line-height:1;color:rgba(255,255,255,0.95);}
-.bzf-c-strip-vp{font-size:9px;line-height:1;color:rgba(255,255,255,0.85);}
+.bzf-c-strip-vp{font-size:9px;line-height:1;color:rgba(255,255,255,0.85);white-space:nowrap;}
 .bzf-c-strip-vp.vp-arrow-big{font-size:11px;}
 /* Face */
 .bzf-c-face{flex:1;display:flex;flex-direction:column;align-items:center;
@@ -253,8 +253,9 @@ html,body{height:100%;font-family:'Crimson Pro',serif;background:var(--bg);color
 .bzf-c-big-rank{font-size:21px;font-weight:900;font-family:'Cinzel',serif;line-height:1;text-align:center;display:inline-block;min-width:1.4em;}
 .bzf-c-big-rank.wide{font-size:13.5px;letter-spacing:-0.02em;}
 .bzf-c-big-suit{font-size:19px;line-height:1;}
-.bzf-c-vp-face{font-size:11.5px;line-height:1;font-weight:700;}
+.bzf-c-vp-face{font-size:11.5px;line-height:1;font-weight:700;white-space:nowrap;}
 .bzf-c-vp-face.vp-arrow-big{font-size:13px;}
+/* Card sizing baseline (no dual-wide override at desktop — face already has room) */
 /* Pivot badge */
 .pivot-badge{position:absolute;top:1px;right:2px;font-family:'Cinzel',serif;
   font-size:0.4rem;color:#9a7228;font-weight:700;line-height:1;}
@@ -293,7 +294,9 @@ html,body{height:100%;font-family:'Crimson Pro',serif;background:var(--bg);color
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:900;}
 /* Mobile card size */
 @media(max-width:480px){:root{--cw:58px;--ch:74px;}
-  .bzf-c-big-rank{font-size:16px;}.bzf-c-big-suit{font-size:15px;}.bzf-c-big-rank.wide{font-size:11px;}}
+  .bzf-c-big-rank{font-size:16px;}.bzf-c-big-suit{font-size:15px;}.bzf-c-big-rank.wide{font-size:11px;}
+  /* Dual-VP cards (TC Joker, rank 2, rank 9) need a touch of extra width only at mobile size for "+5 -5" to fit on one line */
+  .bzf-card.dual-wide{width:calc(var(--cw) + 3px);}}
 
 /* ══════════════════════════════════
    PIVOT CHOOSER MODAL
@@ -380,7 +383,7 @@ html,body{height:100%;font-family:'Crimson Pro',serif;background:var(--bg);color
   <div class="setup-box">
     <div class="game-title">BEN HUND</div>
     <div class="game-sub">A BZF Trick-Taking Game</div>
-    <div style="font-family:'Cinzel',serif;font-size:0.45rem;color:var(--text3);letter-spacing:3px;text-align:center;margin-bottom:16px;">v1.0</div>
+    <div style="font-family:'Cinzel',serif;font-size:0.45rem;color:var(--text3);letter-spacing:3px;text-align:center;margin-bottom:16px;">v1.2</div>
     <div class="setup-label">NUMBER OF PLAYERS</div>
     <div class="player-count-row">
       <button class="pc-btn" onclick="setPC(3)">3</button>
@@ -550,7 +553,7 @@ const SUITS = ['Cups','Swords','Staffs','Clover','Moon','Sun'];
 const SUIT_ICONS = {Cups:'♥',Swords:'⚔',Staffs:'♦',Clover:'♣',Moon:'☾',Sun:'☀'};
 const RANK_INFO = {
   // Ben Mu deck — 5s×3, 8s×3, Pages×2; dual VP on ranks 2 and 9
-  1: {name:'Ace',   display:'A',  count:1, cat:'Star',        starVP:10, arrowVP:0,  skullVP:0,  vpLabel:'★',  vpType:'star'},
+  1: {name:'Ace',   display:'A',  count:1, cat:'Star',        starVP:10, arrowVP:0,  skullVP:0,  vpLabel:'★★', vpType:'star'},
   2: {name:'2',     display:'2',  count:1, cat:'Star+Arrow',  starVP:5,  arrowVP:5,  skullVP:0,  vpLabel:'★▲', vpType:'dual-star-arrow'},
   3: {name:'3',     display:'3',  count:1, cat:'Arrow',       starVP:0,  arrowVP:5,  skullVP:0,  vpLabel:'▲',  vpType:'arrow'},
   4: {name:'4',     display:'4',  count:1, cat:'Neutral',     starVP:0,  arrowVP:0,  skullVP:0,  vpLabel:'',   vpType:'none'},
@@ -801,45 +804,42 @@ function renderCard(card, opts={}) {
   const selCls = selected ? ' sel' : '';
   const handCls = selectable ? ' hand' : '';
   const repCls = replaced ? ' trick-card-replaced' : '';
-  div.className = `bzf-card ${sc} ${sbg}${selCls}${handCls}${repCls}`;
+  const tcCls = (card.isJoker && card.jokerType==='TC') || (!card.isJoker && (card.rank===2 || card.rank===9)) ? ' dual-wide' : '';
+  div.className = `bzf-card ${sc} ${sbg}${selCls}${handCls}${repCls}${tcCls}`;
   div.dataset.cardId = card.id;
   // Content
-  let rankStr, suitIcon, vpStrip='', vpFace='', vpColor='', isArrow=false, isWide=false;
+  let rankStr, suitIcon, vpStrip='', vpFace='', vpColor='var(--text)', isWide=false;
   if (card.isJoker) {
     rankStr = card.jokerType||'?';
     suitIcon = SUIT_ICONS[card.suit]||'';
     vpStrip = card.jokerType==='TD' ? '▲' : '▲☠';
-    vpFace = vpStrip;
-    vpColor = card.jokerType==='TD' ? 'var(--vp-arrow)' : 'var(--vp-bonus)';
-    isArrow = card.jokerType==='TD';
+    vpFace = card.jokerType==='TD' ? '+5' : '+5 -5';
   } else {
     const ri = RANK_INFO[card.rank];
     rankStr = ri.display;
     suitIcon = SUIT_ICONS[card.suit];
     vpStrip = ri.vpLabel||'';
-    vpFace = vpStrip;
-    if(ri.starVP>0&&ri.arrowVP>0) vpColor='var(--vp-bonus)'; // dual star+arrow
-    else if(ri.starVP>0&&ri.skullVP<0) vpColor='var(--vp-bonus)'; // dual star+skull
-    else if(ri.starVP>0) vpColor='var(--vp-star)';
-    else if(ri.arrowVP>0){vpColor='var(--vp-arrow)';isArrow=true;}
-    else if(ri.skullVP<0) vpColor='var(--vp-skull)';
+    const parts = [];
+    if(ri.starVP)  parts.push((ri.starVP>0?'+':'')+ri.starVP);
+    if(ri.arrowVP) parts.push((ri.arrowVP>0?'+':'')+ri.arrowVP);
+    if(ri.skullVP) parts.push((ri.skullVP>0?'+':'')+ri.skullVP);
+    vpFace = parts.join(' ');
     isWide = rankStr.length > 2;
   }
   const isPivot = !card.isJoker && G.pivotRank && card.rank===G.pivotRank;
-  const arrowCls = isArrow ? ' vp-arrow-big' : '';
   const wideCls = isWide ? ' wide' : '';
   const jokerRainbow = card.isJoker ? ' bzf-rainbow' : '';
   div.innerHTML = `
     <div class="bzf-c-strip">
       <span class="bzf-c-strip-rank">${rankStr}</span>
       <span class="bzf-c-strip-suit">${suitIcon}</span>
-      <span class="bzf-c-strip-vp${arrowCls}">${vpStrip}</span>
+      <span class="bzf-c-strip-vp" style="color:${vpColor}">${vpStrip}</span>
     </div>
     <div class="bzf-c-face">
       ${isPivot ? '<span class="pivot-badge">P</span>' : ''}
       <span class="bzf-c-big-rank${wideCls}${jokerRainbow}">${rankStr}</span>
       <span class="bzf-c-big-suit">${suitIcon}</span>
-      ${vpFace ? `<span class="bzf-c-vp-face${arrowCls}" style="color:${vpColor}">${vpFace}</span>` : ''}
+      <span class="bzf-c-vp-face" style="color:${vpColor}">${vpFace||'&nbsp;'}</span>
     </div>`;
   return div;
 }
@@ -1874,23 +1874,19 @@ function computeScores() {
     breakdowns[p.id].skull=-skullTotal;
   });
 
-  // Plus suit: who has most?
+  // Plus suit: every player scores +5 per captured Plus-suit card (individual, no comparison)
   if(G.plusSuit){
-    const counts=G.players.map(p=>p.capturedCards.filter(c=>!c.isJoker&&c.suit===G.plusSuit).length);
-    const max=Math.max(...counts);
-    const allSame=counts.every(c=>c===max);
-    if(!allSame&&max>0){
-      counts.forEach((cnt,i)=>{ if(cnt===max) breakdowns[i].plus=cnt*10; });
-    }
+    G.players.forEach((p,i)=>{
+      const cnt=p.capturedCards.filter(c=>!c.isJoker&&c.suit===G.plusSuit).length;
+      breakdowns[i].plus=cnt*5;
+    });
   }
-  // Minus suit: who has most?
+  // Minus suit: every player scores -5 per captured Minus-suit card (individual, no comparison)
   if(G.minusSuit){
-    const counts=G.players.map(p=>p.capturedCards.filter(c=>!c.isJoker&&c.suit===G.minusSuit).length);
-    const max=Math.max(...counts);
-    const allSame=counts.every(c=>c===max);
-    if(!allSame&&max>0){
-      counts.forEach((cnt,i)=>{ if(cnt===max) breakdowns[i].minus=-(cnt*10); });
-    }
+    G.players.forEach((p,i)=>{
+      const cnt=p.capturedCards.filter(c=>!c.isJoker&&c.suit===G.minusSuit).length;
+      breakdowns[i].minus=-(cnt*5);
+    });
   }
   // Total
   breakdowns.forEach(b=>{ b.total=b.arrow+b.skull+b.plus+b.minus; });
