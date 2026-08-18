@@ -2,1416 +2,2471 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ben Wizard</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Ben Hund</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #f0eee8;
-  --surface: #faf9f5;
-  --surface2: #f0ede4;
-  --surface3: #e8e3d8;
-  --gold: #7a5a10;
-  --gold-light: #a07820;
-  --gold-dim: #b89840;
-  --cream: #1a1408;
-  --cream-dim: #4a4030;
-  --red: #b02010;
-  --red-light: #c83020;
-  --green: #1a6a38;
-  --green-light: #2a8a50;
-  --text: #1a1408;
-  --text-dim: #6a6050;
-  --border: #d0c8b0;
-  --border-gold: #c0a850;
+/* ── LIGHT PASTEL THEME (Ben Rummy palette) ── */
+:root{
+  --bg:#f0f4f8;
+  --bg2:#e8eef5;
+  --bg3:#dde5ee;
+  --panel:#ffffff;
+  --border:rgba(80,100,140,0.25);
+  --border2:rgba(80,100,140,0.45);
+  --text:#0a1628;
+  --text2:#1a2e48;
+  --text3:#3a5070;
+  --gold:#6a4808;
+  --gold2:#9a6010;
+  --gold-lt:#fdf4dc;
+  --purple:#3a1878;
+  --purple-lt:#ede8f8;
+  --red:#8a1008;
+  --red-lt:#fcecea;
+  --green:#0e4820;
+  --green-lt:#e4f5ea;
+  --blue:#0e3060;
+  --blue-lt:#e8f0fc;
+  --skull:#8a1008;
+  --arrow:#0e4820;
+  --star:#6a4808;
+  /* Suit colors — strip backgrounds */
+  --cups-strip:#c8201a;   --cups-face:#7a0a08;   --cups-bg:#fff0f0;   --cups-bd:rgba(200,32,26,0.45);
+  --swords-strip:#c8a800; --swords-face:#5a4200; --swords-bg:#fffde8; --swords-bd:rgba(200,168,0,0.45);
+  --staffs-strip:#3a7fd4; --staffs-face:#0e3878; --staffs-bg:#f0f5ff; --staffs-bd:rgba(58,127,212,0.45);
+  --clover-strip:#2a9a50;  --clover-face:#0e4820;  --clover-bg:#f0fff4;  --clover-bd:rgba(42,154,80,0.45);
+  --moon-strip:#7060a8;   --moon-face:#2a1060;   --moon-bg:#f5f4ff;   --moon-bd:rgba(112,96,168,0.45);
+  --sun-strip:#d4720a;    --sun-face:#5a2400;    --sun-bg:#fff8f0;    --sun-bd:rgba(212,114,10,0.45);
+  /* Card dims */
+  --cw:72px; --ch:88px; --strip-w:20px; --cw-mini:36px;
+  --cream:#f8f2e4; --gold-rim:#c8a870; --gold-dark:#9a7228;
+  --vp-arrow:#1a7a8a; --vp-star:#1a7a2a; --vp-skull:#a82020;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;font-family:'Crimson Pro',serif;background:var(--bg);color:var(--text);overflow:hidden;}
 
-  --hearts: #cc1a1a;
-  --swords: #8a6800;
-  --diamonds: #1a5aaa;
-  --clovers: #1a7a3a;
-  --moon: #5040a0;
-  --sun: #a05008;
+/* ── SCREENS ── */
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;}
+.screen.hidden{display:none!important;}
+/* Non-game screens scroll freely */
+#setup-screen,#team-screen,#score-screen,#pivot-screen,#hotseat-screen{overflow-y:auto;}
+/* Game screen is a fixed column — only the middle body scrolls */
+#game-screen{overflow:hidden;}
 
-  --card-w: 62px;
-  --card-h: 92px;
-  --radius: 6px;
-}
-@media (max-width: 480px) {
-  :root { --card-w: 50px; --card-h: 74px; }
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Crimson Pro', serif;
-  font-size: 16px;
-  min-height: 100vh;
-  padding: 16px;
-}
-h1, h2, h3, .display {
-  font-family: 'Cinzel Decorative', serif;
-}
-.screen { max-width: 900px; margin: 0 auto; }
-.panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 16px;
-}
-h1.title {
-  text-align: center;
-  font-size: 28px;
-  color: var(--gold);
-  margin-bottom: 4px;
-  letter-spacing: 1px;
-}
-.subtitle { text-align: center; color: var(--text-dim); margin-bottom: 20px; font-style: italic; }
-label { display: block; font-weight: 600; margin: 14px 0 6px; color: var(--cream-dim); }
-select, input[type=number] {
-  width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border);
-  font-family: inherit; font-size: 16px; background: var(--surface2);
-}
-.toggle-row { display: flex; align-items: center; gap: 10px; margin: 14px 0; }
-.toggle-row input { width: 20px; height: 20px; }
-button {
-  font-family: 'Crimson Pro', serif;
-  font-weight: 600;
-  font-size: 16px;
-  padding: 12px 20px;
-  border-radius: 8px;
-  border: 1px solid var(--border-gold);
-  background: var(--gold);
-  color: var(--surface);
-  cursor: pointer;
-}
-button:hover { background: var(--gold-light); }
-button:disabled { opacity: 0.4; cursor: default; }
-button.secondary { background: var(--surface2); color: var(--text); border-color: var(--border); }
-.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+/* ══════════════════════════════════
+   SETUP SCREEN
+══════════════════════════════════ */
+#setup-screen{background:var(--bg);overflow-y:auto;align-items:center;justify-content:flex-start;padding:20px 16px 40px;}
+.setup-box{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:24px 20px;max-width:440px;width:100%;}
+.game-title{font-family:'Cinzel',serif;font-size:1.8rem;font-weight:900;color:var(--purple);text-align:center;letter-spacing:3px;margin-bottom:4px;}
+.game-sub{font-family:'Cinzel',serif;font-size:0.6rem;color:var(--text3);text-align:center;letter-spacing:4px;margin-bottom:20px;}
+.setup-label{font-family:'Cinzel',serif;font-size:0.6rem;color:var(--text3);letter-spacing:2px;margin-bottom:8px;}
+.player-count-row{display:flex;gap:8px;margin-bottom:20px;}
+.pc-btn{flex:1;padding:10px 0;border:1px solid var(--border2);border-radius:8px;background:var(--bg2);
+  font-family:'Cinzel',serif;font-size:0.8rem;color:var(--text2);cursor:pointer;transition:all .15s;}
+.pc-btn.active{background:var(--purple);border-color:var(--purple);color:#fff;}
+.pc-btn:hover:not(.active){background:var(--purple-lt);}
+.player-slots{display:flex;flex-direction:column;gap:6px;margin-bottom:20px;}
+.p-slot{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg2);border-radius:8px;border:1px solid var(--border);}
+.p-slot-num{font-family:'Cinzel',serif;font-size:0.6rem;color:var(--text3);width:18px;flex-shrink:0;}
+.p-slot-name{flex:1;background:transparent;border:none;font-family:'Crimson Pro',serif;font-size:1rem;color:var(--text);outline:none;}
+.p-slot-name::placeholder{color:var(--text3);}
+.p-slot-ai{display:flex;border:1px solid var(--border2);border-radius:6px;overflow:hidden;flex-shrink:0;}
+.p-slot-ai button{padding:4px 9px;border:none;cursor:pointer;font-family:'Cinzel',serif;font-size:0.5rem;
+  letter-spacing:1px;background:var(--bg3);color:var(--text3);transition:all .15s;}
+.p-slot-ai button.active-human{background:var(--purple);color:#fff;}
+.p-slot-ai button.active-ai{background:var(--gold2);color:#fff;}
+.btn-start{width:100%;padding:14px;background:var(--purple);border:none;border-radius:10px;
+  font-family:'Cinzel',serif;font-size:0.85rem;font-weight:700;color:#fff;letter-spacing:2px;cursor:pointer;transition:all .2s;}
+.btn-start:hover{background:var(--purple);filter:brightness(1.1);}
 
-/* Table / play area */
-.table {
-  position: relative;
-  background: radial-gradient(ellipse at center, #2a5a3a 0%, #1a3a26 100%);
-  border-radius: 16px;
-  border: 4px solid var(--gold-dim);
-  padding: 20px;
-  min-height: 380px;
-}
-.opponents-row {
-  display: flex; justify-content: space-around; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;
-}
-.opp-badge {
-  background: rgba(250,249,245,0.92); border-radius: 8px; padding: 6px 10px; text-align: center; min-width: 84px;
-  border: 2px solid transparent;
-}
-.opp-badge.active { border-color: var(--gold); }
-.opp-badge.dealer::before { content: "D "; color: var(--red); font-weight: 700; }
-.opp-name { font-weight: 700; font-size: 13px; }
-.opp-info { font-size: 11px; color: var(--text-dim); }
-.trick-area {
-  display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; min-height: 110px;
-  margin-bottom: 16px;
-}
-.played-card-slot { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.played-card-slot .who { font-size: 11px; color: #e8e0c8; }
-.played-card-slot.winning .card {
-  box-shadow: 0 0 0 3px #f0d060, 0 0 14px 2px rgba(240,208,96,0.7);
-  transform: translateY(-4px);
-}
-.winning-badge {
-  background: #f0d060; color: #1a1408; font-weight: 700; font-size: 9px;
-  padding: 1px 5px; border-radius: 4px; margin-left: 3px; letter-spacing: 0.5px;
-}
-.lead-suit-badge { font-size: 10px; }
+/* ══════════════════════════════════
+   HOTSEAT SCREEN
+══════════════════════════════════ */
+#hotseat-screen{background:linear-gradient(135deg,var(--bg2),var(--purple-lt));align-items:center;justify-content:center;}
+.hs-box{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:40px 32px;max-width:360px;width:90%;text-align:center;}
+.hs-label{font-family:'Cinzel',serif;font-size:0.55rem;color:var(--text3);letter-spacing:4px;margin-bottom:12px;}
+.hs-name{font-family:'Cinzel',serif;font-size:2rem;font-weight:900;color:var(--purple);margin-bottom:6px;}
+.hs-sub{font-size:0.95rem;color:var(--text2);margin-bottom:28px;font-style:italic;}
+.btn-reveal{width:100%;padding:16px;background:var(--purple);border:none;border-radius:10px;
+  font-family:'Cinzel',serif;font-size:0.9rem;font-weight:700;color:#fff;letter-spacing:2px;cursor:pointer;transition:all .2s;}
+.btn-reveal:hover{filter:brightness(1.1);}
 
-.card {
-  width: var(--card-w); height: var(--card-h);
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  font-weight: 700; cursor: pointer; user-select: none;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.25);
-  transition: transform 0.1s;
-}
-.card:hover { transform: translateY(-6px); }
-.card.disabled { opacity: 0.35; cursor: default; }
-.card.disabled:hover { transform: none; }
-.card .rank { font-size: 14px; line-height: 1; }
-.card .icon { font-size: 17px; line-height: 1; margin: 2px 0; }
-.card .vp-symbol { font-size: 11px; line-height: 1; }
-.vp-symbol .vp-star { color: #a07800; }
-.vp-symbol .vp-arrow { color: #1a5aaa; }
-.vp-symbol .vp-skull { color: #7a1010; }
-.vp-symbol .vp-arrow-neg { color: #c81c1c; }
-.card.wizard { background: linear-gradient(160deg, #3a2a5a, #1a1030); color: #f0d890; }
-.card.jester { background: linear-gradient(160deg, #5a1a1a, #300a0a); color: #d8b8a0; }
-.card.trump-suit { box-shadow: 0 0 0 2px var(--gold-light), 0 2px 4px rgba(0,0,0,0.25); }
+/* ══════════════════════════════════
+   MAIN GAME SCREEN
+══════════════════════════════════ */
+#game-screen{background:var(--bg);flex-direction:column;}
 
-.hand-row {
-  display: flex; justify-content: center; gap: -8px; flex-wrap: wrap; margin-top: 10px;
-}
-.hand-row .card { margin: 0 -6px; }
+/* Top bar — two rows, scrolls with content */
+#top-bar{background:var(--panel);border-bottom:1px solid var(--border);padding:6px 12px;
+  display:flex;flex-direction:column;gap:4px;}
+#top-bar-row1{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;}
+#top-bar-row2{display:flex;align-items:center;gap:4px;overflow-x:auto;padding-bottom:1px;}
+#top-bar .game-name{font-family:'Cinzel',serif;font-size:0.7rem;font-weight:900;color:var(--purple);letter-spacing:2px;flex-shrink:0;}
+#hand-info{font-family:'Cinzel',serif;font-size:0.6rem;color:var(--text2);letter-spacing:1px;flex-shrink:0;font-weight:700;}
+#pivot-badge{background:var(--gold-lt);border:1px solid var(--gold2);border-radius:6px;
+  padding:3px 8px;font-family:'Cinzel',serif;font-size:0.55rem;color:var(--gold);letter-spacing:1px;flex-shrink:0;font-weight:700;}
+#vp-scores{display:flex;gap:4px;flex-shrink:0;flex-wrap:nowrap;}
+.vp-chip{background:var(--bg2);border:1px solid var(--border);border-radius:6px;
+  padding:2px 7px;font-family:'Cinzel',serif;font-size:0.5rem;color:var(--text);font-weight:700;white-space:nowrap;}
+.vp-chip.active-player{background:var(--purple-lt);border-color:var(--purple);color:var(--purple);}
 
-.hud {
-  display: flex; justify-content: space-between; align-items: center;
-  background: rgba(250,249,245,0.92); border-radius: 8px; padding: 8px 14px; margin-bottom: 12px; font-size: 14px;
-}
-.vp-tags span { margin-right: 8px; }
-.vp-star { color: #a07800; }
-.vp-arrow { color: #1a5aaa; }
-.vp-skull { color: #7a1010; }
+/* Reveal track — two rows, scrolls with content */
+#reveal-track{background:var(--panel);border-bottom:1px solid var(--border);padding:5px 12px;
+  display:flex;flex-direction:column;gap:4px;}
+#reveal-track-slots{display:flex;gap:5px;overflow-x:auto;padding-bottom:2px;}
+.rt-label{font-family:'Cinzel',serif;font-size:0.5rem;color:var(--text2);letter-spacing:2px;font-weight:700;}
+.reveal-slot{display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0;cursor:pointer;position:relative;}
+.reveal-slot .rs-num{font-family:'Cinzel',serif;font-size:0.45rem;color:var(--text2);font-weight:700;}
+.reveal-slot .rs-effect{font-family:'Cinzel',serif;font-size:0.45rem;color:var(--text2);font-weight:700;text-align:center;max-width:44px;}
+.reveal-slot .rs-suit{width:44px;height:28px;border-radius:4px;border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:0.65rem;background:var(--bg2);
+  transition:transform .1s;font-family:'Cinzel',serif;gap:2px;}
+.reveal-slot:active .rs-suit{transform:scale(0.93);}
+.reveal-slot .rs-suit.filled-Cups{background:#ffd0cc;border-color:#c8201a;color:#7a0a08;border-width:2px;}
+.reveal-slot .rs-suit.filled-Swords{background:#fff0a0;border-color:#c8a800;color:#7a6200;border-width:2px;}
+.reveal-slot .rs-suit.filled-Staffs{background:#d0e8ff;border-color:#3a7fd4;color:#0e3878;border-width:2px;}
+.reveal-slot .rs-suit.filled-Clover{background:#c0f0d0;border-color:#2a9a50;color:#1a6a30;border-width:2px;}
+.reveal-slot .rs-suit.filled-Moon{background:#ddd8f8;border-color:#7060a8;color:#402878;border-width:2px;}
+.reveal-slot .rs-suit.filled-Sun{background:#ffe0c0;border-color:#d4720a;color:#7a3a00;border-width:2px;}
+/* Tooltip */
+#rv-tooltip{position:fixed;z-index:500;background:var(--text);color:var(--panel);
+  border-radius:8px;padding:10px 13px;max-width:220px;font-size:0.75rem;line-height:1.5;
+  box-shadow:0 4px 16px rgba(0,0,0,0.25);pointer-events:none;}
+#rv-tooltip.hidden{display:none;}
+#rv-tooltip .rvt-effect{font-family:'Cinzel',serif;font-size:0.65rem;font-weight:700;margin-bottom:4px;}
+#rv-tooltip .rvt-desc{font-size:0.72rem;opacity:0.85;}
+#rv-tooltip .rvt-filled{font-size:0.65rem;opacity:0.7;margin-top:4px;}
 
-.bid-modal, .msg-modal {
-  position: fixed; inset: 0; background: rgba(20,15,5,0.6);
-  display: flex; align-items: center; justify-content: center; z-index: 50;
-}
-.bid-box, .msg-box {
-  background: var(--surface); border-radius: 10px; padding: 24px; max-width: 380px; width: 90%;
-  border: 2px solid var(--gold-dim); text-align: center;
-  max-height: 85vh; overflow-y: auto;
-}
-.bid-choices { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 16px; }
-.bid-choices button { min-width: 44px; padding: 10px; }
-.hidden { display: none !important; }
+/* Middle scrollable area */
+#game-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:0;min-height:0;}
 
-.scoreboard { width: 100%; border-collapse: collapse; margin-top: 10px; }
-.scoreboard th, .scoreboard td { padding: 6px 8px; text-align: center; border-bottom: 1px solid var(--border); font-size: 14px; }
-.scoreboard th { color: var(--text-dim); font-weight: 600; }
-.solo-tag { color: var(--gold); font-weight: 700; }
-.team-tag { color: var(--diamonds); font-weight: 700; }
-.made-bid { color: var(--green); font-weight: 700; }
-.missed-bid { color: var(--red); font-weight: 700; }
+/* Other players zone */
+#others-zone{padding:8px 10px;display:flex;flex-direction:column;gap:6px;flex-shrink:0;}
+.other-player-row{background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.opr-banner{height:6px;width:100%;}
+.opr-banner.team-a{background:linear-gradient(90deg,#1a4880,#3a7fd4);}
+.opr-banner.team-b{background:linear-gradient(90deg,#8a1010,#d43a2a);}
+.opr-body{padding:8px 10px;}
+.opr-header{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
+.opr-name{font-family:'Cinzel',serif;font-size:0.6rem;font-weight:900;color:var(--text);}
+.opr-team{font-family:'Cinzel',serif;font-size:0.5rem;padding:2px 6px;border-radius:4px;font-weight:700;}
+.team-a{background:#e8f0fc;color:#1a4880;}
+.team-b{background:#fcecea;color:#8a1010;}
+.opr-handcount{font-family:'Cinzel',serif;font-size:0.5rem;color:var(--text2);margin-left:auto;font-weight:600;}
+.opr-cards{display:flex;gap:3px;flex-wrap:wrap;}
+/* Hidden hand card (card back) */
+.card-back{width:var(--cw);height:var(--ch);border-radius:4px;border:1.5px solid var(--gold-rim);background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:var(--gold-rim);box-shadow:0 1px 4px rgba(0,0,0,0.18);}
 
-.log { font-size: 13px; color: var(--text-dim); max-height: 90px; overflow-y: auto; margin-top: 10px; text-align: left; }
+/* Current trick */
+#trick-zone{background:var(--panel);border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  padding:10px 12px;flex-shrink:0;}
+#trick-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+#trick-title{font-family:'Cinzel',serif;font-size:0.6rem;color:var(--text);letter-spacing:2px;font-weight:700;}
+#trick-round-badge{font-family:'Cinzel',serif;font-size:0.5rem;padding:2px 8px;border-radius:10px;
+  background:var(--gold-lt);border:1px solid var(--gold2);color:var(--gold);}
+#trick-cards{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;min-height:90px;}
+.trick-card-wrap{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.trick-card-wrap.is-leader{order:-1;}
+.trick-player-label{font-family:'Cinzel',serif;font-size:0.48rem;text-align:center;max-width:60px;font-weight:700;}
+.trick-player-label.team-a{color:#1a4880;}
+.trick-player-label.team-b{color:#8a1010;}
+.lead-indicator{font-family:'Cinzel',serif;font-size:0.4rem;color:var(--gold);font-weight:700;
+  letter-spacing:1px;margin-bottom:1px;}
+.trick-card-replaced{opacity:0.4;}
+
+/* Bidding tableau */
+#bt-zone{padding:8px 12px;flex-shrink:0;}
+#bt-title{font-family:'Cinzel',serif;font-size:0.55rem;color:var(--text);letter-spacing:2px;margin-bottom:6px;font-weight:700;}
+#bt-cards{display:flex;gap:4px;flex-wrap:wrap;}
+
+/* Current player hand */
+#hand-zone{background:var(--panel);border-top:1px solid var(--border);overflow:hidden;flex-shrink:0;margin-top:auto;}
+#hand-banner{height:6px;width:100%;}
+#hand-banner.team-a{background:linear-gradient(90deg,#1a4880,#3a7fd4);}
+#hand-banner.team-b{background:linear-gradient(90deg,#8a1010,#d43a2a);}
+#hand-inner{padding:10px 12px 14px;}
+#hand-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+#hand-player-name{font-family:'Cinzel',serif;font-size:0.65rem;font-weight:700;color:var(--purple);}
+#hand-team-badge{font-family:'Cinzel',serif;font-size:0.5rem;padding:2px 7px;border-radius:4px;font-weight:700;}
+#hand-count{font-family:'Cinzel',serif;font-size:0.5rem;color:var(--text2);margin-left:auto;font-weight:600;}
+#hand-cards{display:flex;gap:3px;flex-wrap:wrap;min-height:86px;}
+
+/* Action bar — pinned at bottom, never scrolls away */
+#action-bar{background:var(--bg2);border-top:1px solid var(--border);padding:10px 12px;
+  display:flex;gap:6px;flex-wrap:wrap;align-items:center;flex-shrink:0;}
+.act-btn{padding:7px 12px;border-radius:7px;font-family:'Cinzel',serif;font-size:0.58rem;
+  letter-spacing:1px;border:1px solid;cursor:pointer;transition:all .15s;white-space:nowrap;
+  font-weight:700;color:var(--text);}
+.act-btn:disabled{opacity:0.22;cursor:not-allowed;}
+.btn-play{background:var(--purple);border-color:var(--purple);color:#fff;}
+.btn-play:hover:not(:disabled){filter:brightness(1.15);}
+.btn-pass{background:var(--bg3);border-color:var(--border2);color:var(--text);font-weight:700;}
+.btn-pass:hover:not(:disabled){background:var(--bg2);}
+.btn-end-trick{background:var(--gold2);border-color:var(--gold);color:#fff;}
+.btn-end-trick:hover:not(:disabled){filter:brightness(1.1);}
+#action-hint{font-size:0.7rem;color:var(--text2);font-style:italic;font-weight:600;margin-left:auto;max-width:160px;text-align:right;}
+
+/* Game log — pinned at very bottom */
+#log-bar{background:var(--bg2);border-top:1px solid var(--border);padding:4px 12px;
+  display:flex;gap:4px;align-items:center;overflow-x:auto;flex-shrink:0;min-height:28px;max-height:28px;}
+.log-entry{font-size:0.62rem;color:var(--text2);white-space:nowrap;flex-shrink:0;font-weight:600;}
+.log-entry.imp{color:var(--purple);font-weight:600;}
+.log-entry.good{color:var(--green);}
+.log-entry.bad{color:var(--red);}
+.log-entry.reveal{color:var(--gold);font-weight:600;}
+
+/* ── CARDS (BenTokoh style) ── */
+.bzf-card{
+  width:var(--cw);height:var(--ch);border-radius:4px;
+  border:1.5px solid var(--gold-rim);background:var(--cream);
+  cursor:default;display:flex;flex-direction:row;overflow:hidden;
+  position:relative;transition:transform .12s,box-shadow .12s;
+  user-select:none;-webkit-user-select:none;
+  box-shadow:0 1px 4px rgba(0,0,0,0.18);flex-shrink:0;
+}
+.bzf-card.hand{cursor:pointer;}
+.bzf-card.hand:hover{transform:translateY(-7px);box-shadow:0 10px 20px rgba(0,0,0,0.22);}
+.bzf-card.sel{
+  transform:translateY(-11px);
+  box-shadow:0 0 0 2px var(--gold),0 10px 24px rgba(0,0,0,0.28);
+  border-color:var(--gold);
+}
+.bzf-card.sel::before{
+  content:'✓';position:absolute;top:-8px;left:50%;transform:translateX(-50%);
+  background:#9a7228;color:#fff;font-size:0.55rem;font-weight:900;
+  width:16px;height:16px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;z-index:11;line-height:16px;text-align:center;
+}
+.bzf-card.trick-card-replaced{opacity:0.4;}
+/* Strip */
+.bzf-c-strip{display:flex;flex-direction:column;align-items:center;
+  justify-content:space-between;padding:3px 2px;width:var(--strip-w);flex-shrink:0;}
+.bzf-c-strip-rank{font-size:11px;font-weight:900;line-height:1;color:rgba(255,255,255,0.95);}
+.bzf-c-strip-suit{font-size:11.5px;line-height:1;color:rgba(255,255,255,0.95);}
+.bzf-c-strip-vp{font-size:9px;line-height:1;color:rgba(255,255,255,0.85);white-space:nowrap;}
+.bzf-c-strip-vp.vp-arrow-big{font-size:11px;}
+/* Face */
+.bzf-c-face{flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:3px;padding:3px 4px;background:var(--cream);position:relative;}
+.bzf-c-big-rank{font-size:21px;font-weight:900;font-family:'Cinzel',serif;line-height:1;text-align:center;display:inline-block;min-width:1.4em;}
+.bzf-c-big-rank.wide{font-size:13.5px;letter-spacing:-0.02em;}
+.bzf-c-big-suit{font-size:19px;line-height:1;}
+.bzf-c-vp-face{font-size:11.5px;line-height:1;font-weight:700;white-space:nowrap;}
+.bzf-c-vp-face.vp-arrow-big{font-size:13px;}
+/* Card sizing baseline (no dual-wide override at desktop — face already has room) */
+/* Pivot badge */
+.pivot-badge{position:absolute;top:1px;right:2px;font-family:'Cinzel',serif;
+  font-size:0.4rem;color:#9a7228;font-weight:700;line-height:1;}
+/* Suit strip colors */
+.bzf-sc-Cups .bzf-c-strip{background:#c8201a;}
+.bzf-sc-Swords .bzf-c-strip{background:#c8a800;}
+.bzf-sc-Staffs .bzf-c-strip{background:#3a7fd4;}
+.bzf-sc-Clover .bzf-c-strip{background:#2a9a50;}
+.bzf-sc-Moon .bzf-c-strip{background:#7060a8;}
+.bzf-sc-Sun .bzf-c-strip{background:#d4720a;}
+.bzf-sc-Joker .bzf-c-strip{background:linear-gradient(180deg,#d43a2a 0%,#d4720a 18%,#c8a800 36%,#2a9a50 54%,#3a7fd4 72%,#7060a8 90%);}
+/* Suit face backgrounds */
+.bzf-sbg-Cups{background:#fff0f0;border-color:rgba(200,32,26,0.45);}
+.bzf-sbg-Swords{background:#fffde8;border-color:rgba(200,168,0,0.4);}
+.bzf-sbg-Staffs{background:#f0f5ff;border-color:rgba(58,127,212,0.45);}
+.bzf-sbg-Clover{background:#f0fff4;border-color:rgba(42,154,80,0.35);}
+.bzf-sbg-Moon{background:#f5f4ff;border-color:rgba(112,96,168,0.35);}
+.bzf-sbg-Sun{background:#fff8f0;border-color:rgba(212,114,10,0.35);}
+.bzf-sbg-Joker{background:linear-gradient(135deg,#fff0f8,#f5f0ff,#f0f8ff,#f0fff4,#fffde8,#fff8f0);border-color:rgba(180,80,220,0.4);}
+/* Suit face text colors */
+.bzf-sc-Cups .bzf-c-big-rank,.bzf-sc-Cups .bzf-c-big-suit{color:#7a0a08;}
+.bzf-sc-Swords .bzf-c-big-rank,.bzf-sc-Swords .bzf-c-big-suit{color:#7a6200;}
+.bzf-sc-Staffs .bzf-c-big-rank,.bzf-sc-Staffs .bzf-c-big-suit{color:#0e3878;}
+.bzf-sc-Clover .bzf-c-big-rank,.bzf-sc-Clover .bzf-c-big-suit{color:#1a6a30;}
+.bzf-sc-Moon .bzf-c-big-rank,.bzf-sc-Moon .bzf-c-big-suit{color:#402878;}
+.bzf-sc-Sun .bzf-c-big-rank,.bzf-sc-Sun .bzf-c-big-suit{color:#7a3a00;}
+/* Suit strip text colors */
+.bzf-sc-Cups .bzf-c-strip-rank,.bzf-sc-Cups .bzf-c-strip-suit,.bzf-sc-Cups .bzf-c-strip-vp{color:#ffd0cc;}
+.bzf-sc-Swords .bzf-c-strip-rank,.bzf-sc-Swords .bzf-c-strip-suit,.bzf-sc-Swords .bzf-c-strip-vp{color:#fff4a0;}
+.bzf-sc-Staffs .bzf-c-strip-rank,.bzf-sc-Staffs .bzf-c-strip-suit,.bzf-sc-Staffs .bzf-c-strip-vp{color:#d0e8ff;}
+.bzf-sc-Clover .bzf-c-strip-rank,.bzf-sc-Clover .bzf-c-strip-suit,.bzf-sc-Clover .bzf-c-strip-vp{color:#c0f0d0;}
+.bzf-sc-Moon .bzf-c-strip-rank,.bzf-sc-Moon .bzf-c-strip-suit,.bzf-sc-Moon .bzf-c-strip-vp{color:#ddd8ff;}
+.bzf-sc-Sun .bzf-c-strip-rank,.bzf-sc-Sun .bzf-c-strip-suit,.bzf-sc-Sun .bzf-c-strip-vp{color:#ffe8c0;}
+/* Joker rainbow rank */
+.bzf-rainbow{background:linear-gradient(135deg,#d43a2a,#d4720a,#c8a800,#2a9a50,#3a7fd4,#7060a8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:900;}
+/* Mobile card size */
+@media(max-width:480px){:root{--cw:58px;--ch:74px;}
+  .bzf-c-big-rank{font-size:16px;}.bzf-c-big-suit{font-size:15px;}.bzf-c-big-rank.wide{font-size:11px;}
+  /* Dual-VP cards (TC Joker, rank 2, rank 9) need a touch of extra width only at mobile size for "+5 -5" to fit on one line */
+  .bzf-card.dual-wide{width:calc(var(--cw) + 3px);}}
+
+/* ══════════════════════════════════
+   PIVOT CHOOSER MODAL
+══════════════════════════════════ */
+#modal-overlay{position:fixed;inset:0;background:rgba(10,20,50,0.55);display:flex;
+  align-items:center;justify-content:center;z-index:200;}
+#modal-overlay.hidden{display:none!important;}
+#modal-box{background:var(--panel);border:1px solid var(--border2);border-radius:14px;
+  padding:24px 20px;max-width:360px;width:90%;max-height:90vh;overflow-y:auto;}
+.modal-title{font-family:'Cinzel',serif;font-size:0.9rem;color:var(--purple);letter-spacing:2px;margin-bottom:8px;}
+.modal-body{font-size:0.85rem;color:var(--text2);margin-bottom:16px;line-height:1.6;}
+.modal-options{display:flex;flex-direction:column;gap:8px;}
+.modal-opt{padding:10px 14px;border:1px solid var(--border2);border-radius:8px;background:var(--bg2);
+  font-family:'Cinzel',serif;font-size:0.7rem;color:var(--text2);cursor:pointer;transition:all .15s;text-align:left;}
+.modal-opt:hover{background:var(--purple-lt);border-color:var(--purple);color:var(--purple);}
+.modal-btns{display:flex;gap:8px;margin-top:16px;}
+.modal-btn{flex:1;padding:10px;border-radius:8px;font-family:'Cinzel',serif;font-size:0.7rem;
+  letter-spacing:1px;border:1px solid;cursor:pointer;transition:all .15s;}
+.modal-btn.primary{background:var(--purple);border-color:var(--purple);color:#fff;}
+.modal-btn.primary:hover{filter:brightness(1.1);}
+.modal-btn.secondary{background:var(--bg2);border-color:var(--border2);color:var(--text2);}
+.modal-btn.secondary:hover{background:var(--bg3);}
+
+/* ══════════════════════════════════
+   TEAM FORMATION SCREEN
+══════════════════════════════════ */
+#team-screen{background:var(--bg);overflow-y:auto;align-items:center;justify-content:flex-start;padding:20px 16px 40px;}
+.team-box{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;max-width:440px;width:100%;margin-bottom:12px;}
+.team-box-title{font-family:'Cinzel',serif;font-size:0.7rem;color:var(--text3);letter-spacing:2px;margin-bottom:12px;}
+.bt-display{display:flex;flex-direction:column;gap:10px;margin-bottom:12px;}
+.bt-player-row{display:flex;align-items:center;gap:8px;}
+.bt-pname{font-family:'Cinzel',serif;font-size:0.65rem;font-weight:700;color:var(--text2);min-width:48px;max-width:48px;flex-shrink:0;word-break:break-word;font-size:0.55rem;}
+.bt-cards-row{display:flex;gap:3px;flex-wrap:wrap;flex:1;}
+.pick-options{display:flex;flex-direction:column;gap:6px;}
+.pick-btn{padding:10px 14px;border:1px solid var(--border2);border-radius:8px;background:var(--bg2);
+  font-family:'Cinzel',serif;font-size:0.7rem;color:var(--text2);cursor:pointer;transition:all .15s;text-align:left;}
+.pick-btn:hover{background:var(--purple-lt);border-color:var(--purple);color:var(--purple);}
+.team-display{display:flex;flex-direction:column;gap:6px;}
+.team-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;}
+.team-row.team-a{background:#e8f0fc;}
+.team-row.team-b{background:#fcecea;}
+.team-row-label{font-family:'Cinzel',serif;font-size:0.55rem;min-width:60px;}
+.team-row-name{font-family:'Cinzel',serif;font-size:0.7rem;font-weight:700;color:var(--text2);}
+
+/* ══════════════════════════════════
+   SCORING SCREEN
+══════════════════════════════════ */
+#score-screen{background:var(--bg);overflow-y:auto;align-items:center;justify-content:flex-start;padding:20px 16px 40px;}
+.score-box{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;max-width:440px;width:100%;}
+.score-title{font-family:'Cinzel',serif;font-size:1rem;font-weight:900;color:var(--purple);letter-spacing:3px;margin-bottom:16px;}
+.score-section-title{font-family:'Cinzel',serif;font-size:0.6rem;color:var(--text3);letter-spacing:2px;margin:12px 0 6px;}
+.score-table{width:100%;border-collapse:collapse;font-size:0.82rem;}
+.score-table th{font-family:'Cinzel',serif;font-size:0.55rem;color:var(--text3);letter-spacing:1px;
+  padding:5px 8px;border-bottom:1px solid var(--border);text-align:left;}
+.score-table td{padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text);}
+.score-table tr:last-child td{border-bottom:none;}
+.score-pos{color:var(--green);font-weight:600;}
+.score-neg{color:var(--red);font-weight:600;}
+.score-total{font-weight:700;font-size:0.95rem;}
+.score-btns{display:flex;gap:8px;margin-top:16px;}
+.score-btn{flex:1;padding:12px;border-radius:8px;font-family:'Cinzel',serif;font-size:0.7rem;
+  letter-spacing:1px;border:1px solid;cursor:pointer;transition:all .15s;}
+.score-btn.primary{background:var(--purple);border-color:var(--purple);color:#fff;}
+.score-btn.primary:hover{filter:brightness(1.1);}
+.score-btn.secondary{background:var(--bg2);border-color:var(--border2);color:var(--text2);}
+
+/* ══════════════════════════════════
+   PIVOT DECLARATION SCREEN
+══════════════════════════════════ */
+#pivot-screen{background:var(--bg);overflow-y:auto;align-items:center;justify-content:flex-start;padding:20px 16px 40px;}
+.pivot-box{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;max-width:440px;width:100%;}
+.pivot-announce{text-align:center;padding:20px 0;}
+.pivot-rank-display{font-family:'Cinzel',serif;font-size:3rem;font-weight:900;color:var(--purple);line-height:1;}
+.pivot-rank-name{font-family:'Cinzel',serif;font-size:0.7rem;color:var(--text3);letter-spacing:3px;margin-top:6px;}
+.btn-continue{width:100%;padding:14px;background:var(--purple);border:none;border-radius:10px;
+  font-family:'Cinzel',serif;font-size:0.85rem;font-weight:700;color:#fff;letter-spacing:2px;cursor:pointer;transition:all .2s;margin-top:16px;}
+.btn-continue:hover{filter:brightness(1.1);}
 </style>
 </head>
 <body>
 
-<div id="app" class="screen"></div>
+<!-- ══ SETUP ══ -->
+<div id="setup-screen" class="screen">
+  <div class="setup-box">
+    <div class="game-title">BEN HUND</div>
+    <div class="game-sub">A BZF Trick-Taking Game</div>
+    <div style="font-family:'Cinzel',serif;font-size:0.45rem;color:var(--text3);letter-spacing:3px;text-align:center;margin-bottom:16px;">v1.3</div>
+    <div class="setup-label">NUMBER OF PLAYERS</div>
+    <div class="player-count-row">
+      <button class="pc-btn" onclick="setPC(3)">3</button>
+      <button class="pc-btn active" onclick="setPC(4)">4</button>
+      <button class="pc-btn" onclick="setPC(5)">5</button>
+      <button class="pc-btn" onclick="setPC(6)">6</button>
+    </div>
+    <div class="setup-label">GAME LENGTH</div>
+    <div class="player-count-row">
+      <button id="gl-short" class="pc-btn" onclick="setGL('short')">Short<br><span style="font-size:0.5rem;opacity:0.8;">4 Hands</span></button>
+      <button id="gl-medium" class="pc-btn active" onclick="setGL('medium')">Medium<br><span style="font-size:0.5rem;opacity:0.8;">7 Hands</span></button>
+      <button id="gl-long" class="pc-btn" onclick="setGL('long')">Long<br><span style="font-size:0.5rem;opacity:0.8;">10 Hands</span></button>
+    </div>
+    <div class="setup-label">PLAYER NAMES</div>
+    <div class="player-slots" id="player-slots"></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 0 4px;">
+      <div id="cheat-toggle" onclick="toggleCheat()"
+        style="width:44px;height:24px;border-radius:12px;background:var(--bg3);border:1px solid var(--border2);
+        cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;">
+        <div id="cheat-knob" style="position:absolute;top:3px;left:3px;width:16px;height:16px;
+          border-radius:50%;background:var(--text3);transition:all .2s;"></div>
+      </div>
+      <div>
+        <div style="font-family:'Cinzel',serif;font-size:0.6rem;font-weight:700;color:var(--text2);">JOKER CHEAT MODE</div>
+        <div style="font-size:0.7rem;color:var(--text3);">Deal all Jokers to your hand</div>
+      </div>
+    </div>
+    <button class="btn-start" onclick="startGame()">BEGIN GAME</button>
+  </div>
+</div>
+
+<!-- ══ HOTSEAT HANDOFF ══ -->
+<div id="hotseat-screen" class="screen hidden">
+  <div class="hs-box">
+    <div class="hs-label">PASS THE DEVICE TO</div>
+    <div class="hs-name" id="hs-name"></div>
+    <div class="hs-sub" id="hs-sub"></div>
+    <button class="btn-reveal" onclick="revealHand()">TAP TO REVEAL YOUR HAND</button>
+  </div>
+</div>
+
+<!-- ══ PIVOT DECLARATION ══ -->
+<div id="pivot-screen" class="screen hidden">
+  <div class="pivot-box">
+    <div class="team-box-title">PIVOT RANK DECLARED</div>
+    <div class="pivot-announce">
+      <div class="pivot-rank-display" id="pivot-rank-display"></div>
+      <div class="pivot-rank-name" id="pivot-rank-name"></div>
+    </div>
+    <p style="font-size:0.85rem;color:var(--text2);line-height:1.6;margin-bottom:8px;">
+      The first time a card of this rank is played in each new suit, it triggers a reveal effect — assigning Trump, Plus, Lead, Minus, Pivot Choice, or Joker Bonus to that suit.
+    </p>
+    <div id="pivot-eligible-display" style="background:var(--gold-lt);border:1px solid var(--gold2);border-radius:8px;padding:10px 12px;font-size:0.8rem;color:var(--gold);margin-bottom:8px;"></div>
+    <button class="btn-continue" onclick="proceedToTeams()">PROCEED TO TEAM FORMATION</button>
+  </div>
+</div>
+
+<!-- ══ TEAM FORMATION ══ -->
+<div id="team-screen" class="screen hidden">
+  <div class="team-box" id="team-bt-box">
+    <div class="team-box-title">BIDDING TABLEAUX</div>
+    <div class="bt-display" id="bt-display"></div>
+  </div>
+  <div class="team-box" id="team-pick-box">
+    <div class="team-box-title" id="team-pick-title"></div>
+    <div class="pick-options" id="pick-options"></div>
+  </div>
+  <div class="team-box" id="team-result-box" style="display:none;">
+    <div class="team-box-title">TEAMS FORMED</div>
+    <div class="team-display" id="team-display"></div>
+    <button class="btn-continue" onclick="startTrickTaking()">BEGIN TRICK TAKING</button>
+  </div>
+</div>
+
+<!-- ══ MAIN GAME ══ -->
+<div id="game-screen" class="screen hidden">
+  <div id="game-body">
+    <div id="top-bar">
+      <div id="top-bar-row1">
+        <span class="game-name">BEN HUND</span>
+        <span id="hand-info"></span>
+        <span id="pivot-badge"></span>
+      </div>
+      <div id="top-bar-row2">
+        <div id="vp-scores"></div>
+      </div>
+    </div>
+    <div id="reveal-track">
+      <span class="rt-label">REVEALS</span>
+      <div id="reveal-track-slots">
+        <div class="reveal-slot" id="rv0"><div class="rs-num">1</div><div class="rs-suit" id="rs0">?</div><div class="rs-effect">Trump</div></div>
+        <div class="reveal-slot" id="rv1"><div class="rs-num">2</div><div class="rs-suit" id="rs1">?</div><div class="rs-effect">Plus</div></div>
+        <div class="reveal-slot" id="rv2"><div class="rs-num">3</div><div class="rs-suit" id="rs2">?</div><div class="rs-effect">Lead</div></div>
+        <div class="reveal-slot" id="rv3"><div class="rs-num">4</div><div class="rs-suit" id="rs3">?</div><div class="rs-effect">Minus</div></div>
+        <div class="reveal-slot" id="rv4"><div class="rs-num">5</div><div class="rs-suit" id="rs4">?</div><div class="rs-effect">Pivot</div></div>
+        <div class="reveal-slot" id="rv5"><div class="rs-num">6</div><div class="rs-suit" id="rs5">?</div><div class="rs-effect">Jokers</div></div>
+      </div>
+    </div>
+    <div id="others-zone"></div>
+    <div id="trick-zone">
+      <div id="trick-header">
+        <span id="trick-title">TRICK 1</span>
+        <span id="trick-round-badge">Round 1</span>
+        <span id="trick-lead-label" style="font-family:'Cinzel',serif;font-size:0.5rem;color:var(--text3);margin-left:8px;"></span>
+      </div>
+      <div id="trick-cards"></div>
+    </div>
+    <div id="bt-zone">
+      <div id="bt-title">YOUR BIDDING TABLEAU</div>
+      <div id="bt-cards"></div>
+    </div>
+    <div id="hand-zone">
+      <div id="hand-banner"></div>
+      <div id="hand-inner">
+        <div id="hand-header">
+          <span id="hand-player-name"></span>
+          <span id="hand-team-badge" class="opr-team"></span>
+          <span id="hand-count"></span>
+        </div>
+        <div id="hand-cards"></div>
+      </div>
+    </div>
+  </div>
+  <div id="action-bar">
+    <button class="act-btn btn-play" id="btn-play" onclick="playSelected()" disabled>Play Card</button>
+    <button class="act-btn btn-pass" id="btn-pass" onclick="passRound2()" disabled>Pass</button>
+    <button class="act-btn btn-end-trick" id="btn-end-trick" onclick="endTrick()" disabled>End Trick</button>
+    <span id="action-hint"></span>
+  </div>
+  <div id="log-bar"></div>
+</div>
+
+<!-- ══ SCORE SCREEN ══ -->
+<div id="score-screen" class="screen hidden">
+  <div class="score-box">
+    <div class="score-title" id="score-title">END OF HAND</div>
+    <div id="score-content"></div>
+    <div class="score-btns">
+      <button class="score-btn primary" id="btn-next-hand" onclick="nextHand()">Next Hand</button>
+      <button class="score-btn secondary" onclick="backToSetup()">New Game</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL ══ -->
+<div id="modal-overlay" class="hidden">
+  <div id="modal-box">
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-options" id="modal-options"></div>
+    <div class="modal-btns" id="modal-btns"></div>
+  </div>
+</div>
+
+<!-- ══ REVEAL TOOLTIP ══ -->
+<div id="rv-tooltip" class="hidden">
+  <div class="rvt-effect" id="rvt-effect"></div>
+  <div class="rvt-desc" id="rvt-desc"></div>
+  <div class="rvt-filled" id="rvt-filled"></div>
+</div>
 
 <script>
-// ============================================================
-// BenWizard — v0.1 core engine
-// TD = Wizard (always wins, first Wizard played wins trick)
-// TC = Jester (always loses; if all cards in trick are Jesters, first Jester wins)
-// ============================================================
-
-// ---------- Card data (VP structure ported from BenMü) ----------
-const SUIT_DEFS = [
-  { name:'Hearts',   icon:'♥', color:'var(--hearts)' },
-  { name:'Swords',   icon:'⚔', color:'var(--swords)' },
-  { name:'Diamonds', icon:'♦', color:'var(--diamonds)' },
-  { name:'Clovers',  icon:'♣', color:'var(--clovers)' },
-  { name:'Moon',     icon:'☾', color:'var(--moon)' },
-  { name:'Sun',      icon:'☀', color:'var(--sun)' },
-];
-
-const RANKS = [
-  { rank:1,  name:'Ace',    face:'A',  count:1, cat:'Star',    iVP:10, eVP:0,  pen:0  },
-  { rank:2,  name:'2',      face:'2',  count:1, cat:'Star',    iVP:5,  eVP:5,  pen:0,  dualVP:true },
-  { rank:3,  name:'3',      face:'3',  count:1, cat:'Arrow',   iVP:0,  eVP:5,  pen:0  },
-  { rank:4,  name:'4',      face:'4',  count:1, cat:'Neutral', iVP:0,  eVP:0,  pen:0  },
-  { rank:5,  name:'5',      face:'5',  count:3, cat:'Arrow',   iVP:0,  eVP:10, pen:0 },
-  { rank:6,  name:'6',      face:'6',  count:1, cat:'Neutral', iVP:0,  eVP:0,  pen:0  },
-  { rank:7,  name:'7',      face:'7',  count:1, cat:'Skull',   iVP:0,  eVP:-5, pen:-5 },
-  { rank:8,  name:'8',      face:'8',  count:3, cat:'Arrow',   iVP:0,  eVP:5,  pen:0  },
-  { rank:9,  name:'9',      face:'9',  count:1, cat:'StarSkull', iVP:0,  eVP:5,  skullVP:-5, pen:0, dualVP:true },
-  { rank:10, name:'10',     face:'10', count:1, cat:'Neutral', iVP:0,  eVP:0,  pen:0  },
-  { rank:11, name:'Page',   face:'Pg', count:2, cat:'Star',    iVP:5,  eVP:0,  pen:0  },
-  { rank:12, name:'Knight', face:'Kn', count:1, cat:'Skull',   iVP:0,  eVP:-10, pen:-5 },
-  { rank:13, name:'Queen',  face:'Q',  count:1, cat:'Neutral', iVP:0,  eVP:0,  pen:0  },
-  { rank:14, name:'King',   face:'K',  count:1, cat:'Arrow',   iVP:0,  eVP:-10, pen:0  },
-];
-
-// Deck/round scaling per player count (agreed table)
-const PLAYER_CONFIG = {
-  3:  { suits:3, TD:3, TC:3, start:10, max:21 },
-  4:  { suits:4, TD:4, TC:4, start:10, max:21 },
-  5:  { suits:5, TD:5, TC:5, start:10, max:21 },
-  6:  { suits:6, TD:6, TC:6, start:10, max:21 },
-  7:  { suits:6, TD:6, TC:6, start:5,  max:18 },
-  8:  { suits:6, TD:6, TC:6, start:5,  max:15 },
-  9:  { suits:6, TD:6, TC:6, start:5,  max:14 },
-  10: { suits:6, TD:6, TC:6, start:5,  max:12 },
+// ══════════════════════════════════════════════════════════
+//  CARD DATA
+// ══════════════════════════════════════════════════════════
+const SUITS = ['Cups','Swords','Staffs','Clover','Moon','Sun'];
+const SUIT_ICONS = {Cups:'♥',Swords:'⚔',Staffs:'♦',Clover:'♣',Moon:'☾',Sun:'☀'};
+const RANK_INFO = {
+  // Ben Mu deck — 5s×3, 8s×3, Pages×2; dual VP on ranks 2 and 9
+  1: {name:'Ace',   display:'A',  count:1, cat:'Star',        starVP:10, arrowVP:0,  skullVP:0,  vpLabel:'★★', vpType:'star'},
+  2: {name:'2',     display:'2',  count:1, cat:'Star+Arrow',  starVP:5,  arrowVP:5,  skullVP:0,  vpLabel:'★▲', vpType:'dual-star-arrow'},
+  3: {name:'3',     display:'3',  count:1, cat:'Arrow',       starVP:0,  arrowVP:5,  skullVP:0,  vpLabel:'▲',  vpType:'arrow'},
+  4: {name:'4',     display:'4',  count:1, cat:'Neutral',     starVP:0,  arrowVP:0,  skullVP:0,  vpLabel:'',   vpType:'none'},
+  5: {name:'5',     display:'5',  count:3, cat:'Neutral',     starVP:0,  arrowVP:0,  skullVP:0,  vpLabel:'',   vpType:'none'},
+  6: {name:'6',     display:'6',  count:1, cat:'Arrow',       starVP:0,  arrowVP:5,  skullVP:0,  vpLabel:'▲',  vpType:'arrow'},
+  7: {name:'7',     display:'7',  count:1, cat:'Skull',       starVP:0,  arrowVP:0,  skullVP:-5, vpLabel:'☠',  vpType:'skull'},
+  8: {name:'8',     display:'8',  count:3, cat:'Neutral',     starVP:0,  arrowVP:0,  skullVP:0,  vpLabel:'',   vpType:'none'},
+  9: {name:'9',     display:'9',  count:1, cat:'Star+Skull',  starVP:5,  arrowVP:0,  skullVP:-5, vpLabel:'★☠', vpType:'dual-star-skull'},
+  10:{name:'10',    display:'10', count:1, cat:'Neutral',     starVP:0,  arrowVP:0,  skullVP:0,  vpLabel:'',   vpType:'none'},
+  11:{name:'Page',  display:'Pg', count:2, cat:'Star',        starVP:5,  arrowVP:0,  skullVP:0,  vpLabel:'★',  vpType:'star'},
+  12:{name:'Knight',display:'Kn', count:1, cat:'Skull',       starVP:0,  arrowVP:0,  skullVP:-10, vpLabel:'☠☠',  vpType:'skull'},
+  13:{name:'Queen', display:'Q',  count:1, cat:'Neutral',     starVP:0,  arrowVP:0,  skullVP:0,  vpLabel:'',   vpType:'none'},
+  14:{name:'King',  display:'K',  count:1, cat:'Neutral',     starVP:0,  arrowVP:0,  skullVP:0,  vpLabel:'',   vpType:'none'},
 };
 
-// Solo count by player count (BenRummy precedent)
+// Ranks per player count (non-Joker)
+const RANKS_BY_PC = {
+  3: [2,3,4,5,6],
+  4: [1,1,1,2,3,4,5,6,7,7,7],  // Ace×3, 7×3 handled via count
+  5: [1,2,3,4,5,6,7,8,9,10,11,12,13,14],
+  6: [1,2,3,4,5,6,7,8,9,10,11,12,13,14],
+};
 
-// ---------- Deck builder ----------
+// Eligible pivot ranks per player count
+const PIVOT_ELIGIBLE = {
+  // Ben Mu: eligible = Star or Neutral. Dual-VP cards (2, 9) included — have Star component.
+  3: [2,4,5],           // ranks 2-6 present; 2=Star+Arrow, 4=Neutral, 5=Neutral
+  4: [1,2,4,5],         // ranks 1-7; adds Ace(Star)
+  5: [1,2,4,5,8,9,10,11,13], // full deck; adds 8,9,10,11(Page),13(Queen)
+  6: [1,2,4,5,8,9,10,11,13],
+};
+
+const EFFECTS = ['Trump','Plus','Lead','Minus','Chooser','Jokers'];
+const EFFECT_DETAIL = {
+  Trump:   'The suit that triggers this slot becomes Trump for the rest of this hand. Trump cards beat all non-trump, non-Joker cards.',
+  Plus:    'The suit that triggers this slot becomes the Plus suit. At end of hand, the player(s) with the most Plus-suited cards in their captured tricks score +10 VP per card.',
+  Lead:    'The player who triggers this slot leads the first trick of the next hand.',
+  Minus:   'The suit that triggers this slot becomes the Minus suit. At end of hand, the player(s) with the most Minus-suited cards score −10 VP per card.',
+  Chooser: 'The player who triggers this slot chooses the Pivot Rank for the next hand.',
+  Jokers:  'The player who triggers this slot receives 2 Jokers dealt to them first at the start of the next hand.',
+};
+
+// ══════════════════════════════════════════════════════════
+//  GAME STATE
+// ══════════════════════════════════════════════════════════
+let G = {};
+
+function initState(playerNames, aiFlags=[]) {
+  G = {
+    players: playerNames.map((n,i)=>({
+      id:i, name:n,
+      isAI: aiFlags[i]||false,
+      hand:[], bt:[],
+      capturedCards:[],
+      vpTotal:0,
+      team:null,
+      isLead:false,
+    })),
+    numPlayers: playerNames.length,
+    handNum: 0,
+    pivotRank: 4,
+    pivotChooser: null,  // player id who picks next pivot
+    jokerBonusPlayer: null, // player id who gets 2 jokers
+    nextHandLeader: null,   // player id who leads first trick next hand
+    // Reveal state
+    reveals: [],         // [{suit, effect, playerIdx}]
+    triggeredSuits: new Set(),
+    trumpSuit: null,
+    plusSuit: null,
+    minusSuit: null,
+    leadNextHandPlayer: null,
+    chooserPlayer: null,
+    // Trick state
+    trickNum: 1,
+    currentTrick: [], // [{playerIdx, card, round, replaced}]
+    trickLeader: 0,
+    currentPlayerIdx: 0,
+    round: 1,
+    round2Passed: [], // player indices who passed in round 2
+    round2Played: [], // player indices who played joker in round 2
+    trickWinner: null,
+    tcPlayedTotal: 0,  // total TCs played across rounds (this trick)
+    tdPlayedInTrick: false,
+    // Phase
+    phase: 'deal', // deal | pivot | bt | teams | tricks | score
+    currentViewerIdx: 0, // who's currently viewing their hand (hotseat)
+    starScoredIds: new Set(), // card IDs that already scored star VP
+    // Cumulative VP (across hands)
+    cumVP: null,
+  };
+}
+
+// ══════════════════════════════════════════════════════════
+//  DECK BUILDING
+// ══════════════════════════════════════════════════════════
+let _cardIdCounter = 0;
+function makeCard(suit, rank, isJoker=false, jokerType=null) {
+  return {
+    id: _cardIdCounter++,
+    suit, rank, isJoker,
+    jokerType, // 'TD' or 'TC' or null
+    starScored: false,
+  };
+}
+
 function buildDeck(numPlayers) {
-  const cfg = PLAYER_CONFIG[numPlayers];
-  const suits = SUIT_DEFS.slice(0, cfg.suits);
-  const deck = [];
-  let uid = 0;
-  suits.forEach((suit, si) => {
-    RANKS.forEach(r => {
-      for (let c = 0; c < r.count; c++) {
-        deck.push({
-          id: 'c' + (uid++), type:'suit', suit: suit.name, suitIcon: suit.icon, suitColor: suit.color,
-          rank: r.rank, face: r.face, cat: r.cat, iVP: r.iVP, eVP: r.eVP, skullVP: r.skullVP || 0, pen: r.pen, dualVP: !!r.dualVP,
-        });
-      }
-    });
-  });
-  for (let i = 0; i < cfg.TD; i++) {
-    deck.push({ id:'wiz'+i, type:'wizard', face:'Wizard', cat:'Arrow', iVP:0, eVP:5, pen:0 });
+  _cardIdCounter = 0;
+  const cards = [];
+  const ranks = getRanksForPC(numPlayers);
+  for (const suit of SUITS) {
+    for (const rank of ranks) {
+      cards.push(makeCard(suit, rank));
+    }
+    // 1 Joker per suit (type assigned at deal time)
+    cards.push(makeCard(suit, 15, true, null));
   }
-  for (let i = 0; i < cfg.TC; i++) {
-    deck.push({ id:'jes'+i, type:'jester', face:'Jester', cat:'StarSkull', iVP:0, eVP:5, skullVP:-5, pen:0, dualVP:true });
-  }
-  return shuffle(deck);
+  return cards;
 }
 
-// ---------- Major Arcana (curated v1 subset — DuringTrick only, no PreDeal cards yet) ----------
-// suitRef: if set, this card is only included in the deck when that suit is active
-// for the current player count (per SUIT_DEFS.slice(0, cfg.suits)).
-const MA_CARDS = [
-  { maId:'Tower',   label:'The Tower',        copies:3, timing:'DuringTrick',
-    desc:'Knight/Queen/King lose 7 ranks for the rest of this trick.' },
-  { maId:'Star',    label:'The Star',         copies:3, timing:'DuringTrick',
-    desc:'Star VP is doubled for cards captured in this trick.' },
-  { maId:'World',   label:'The World',        copies:3, timing:'DuringTrick',
-    desc:'Trick winner gets +6▲ per distinct suit present in this trick.' },
-  { maId:'Magician',label:'The Magician',     copies:2, timing:'DuringTrick', suitRef:'Clovers',
-    desc:'Trick winner gets +10▲ if a Clovers card appears in this trick.' },
-  { maId:'Priestess',label:'High Priestess',  copies:2, timing:'DuringTrick', suitRef:'Hearts',
-    desc:'Trick winner gets +10▲ if a Hearts card appears in this trick.' },
-  { maId:'Empress', label:'The Empress',      copies:2, timing:'DuringTrick', suitRef:'Diamonds',
-    desc:'Trick winner gets +10▲ if a Diamonds card appears in this trick.' },
-  { maId:'Emperor', label:'The Emperor',      copies:2, timing:'DuringTrick', suitRef:'Swords',
-    desc:'Trick winner gets +10▲ if a Swords card appears in this trick.' },
-  { maId:'Moon',    label:'The Moon',         copies:2, timing:'DuringTrick', suitRef:'Moon',
-    desc:'Trick winner gets +10▲ if a Moon card appears in this trick.' },
-  { maId:'Sun',     label:'The Sun',          copies:2, timing:'DuringTrick', suitRef:'Sun',
-    desc:'Trick winner gets +10▲ if a Sun card appears in this trick.' },
-  { maId:'Sage',    label:'The Sage',         copies:3, timing:'DuringTrick',
-    desc:'Pick a rank (8, 9, or 10). Trick winner gets +4▲ per card of that rank in this trick.' },
-  { maId:'Hanged',  label:'The Hanged Man',   copies:2, timing:'DuringTrick',
-    desc:'You skip this trick (auto-pass) and lead the next one.' },
-  { maId:'Fortune', label:'Wheel of Fortune', copies:2, timing:'DuringTrick',
-    desc:'Rotates every player\'s Arcana Tableau one seat clockwise.' },
-];
-
-function buildMADeck(numPlayers) {
-  const cfg = PLAYER_CONFIG[numPlayers];
-  const activeSuits = new Set(SUIT_DEFS.slice(0, cfg.suits).map(s => s.name));
-  const deck = [];
-  let uid = 0;
-  MA_CARDS.forEach(def => {
-    if (def.suitRef && !activeSuits.has(def.suitRef)) return; // excluded — suit not in play
-    for (let i = 0; i < def.copies; i++) {
-      deck.push({ id: 'ma' + (uid++), maId: def.maId, label: def.label, desc: def.desc, timing: def.timing, suitRef: def.suitRef || null });
-    }
-  });
-  return shuffle(deck);
-}
-
-function topUpMAAuction() {
-  const targetSize = G.numPlayers * 2;
-  while (G.maAuctionTable.length < targetSize && G.maDeck.length) {
-    G.maAuctionTable.push(G.maDeck.shift());
+function getRanksForPC(pc) {
+  // Ben Mu deck: 5s×3, 8s×3, Pages(11)×2, all others×1
+  const out = [];
+  const rankList = pc <= 3 ? [2,3,4,5,6] : pc === 4 ? [1,2,3,4,5,6,7] : [1,2,3,4,5,6,7,8,9,10,11,12,13,14];
+  for (const r of rankList) {
+    const info = RANK_INFO[r];
+    if (!info) continue;
+    const cnt = info.count || 1;
+    for (let i=0;i<cnt;i++) out.push(r);
   }
-  if (G.maAuctionTable.length < targetSize && G.maDiscard.length) {
-    G.maDeck = shuffle(G.maDiscard);
-    G.maDiscard = [];
-    while (G.maAuctionTable.length < targetSize && G.maDeck.length) {
-      G.maAuctionTable.push(G.maDeck.shift());
-    }
-  }
+  return out;
 }
 
 function shuffle(arr) {
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+  for (let i=arr.length-1;i>0;i--) {
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
   }
-  return a;
+  return arr;
 }
 
-// Hand sort: Wizards first, then trump suit, then remaining suits in descending
-// order (Sun, Moon, Clovers, Diamonds, Swords, Hearts), ranks high-to-low within
-// each suit, Jesters last.
-const SUIT_DESC_ORDER = SUIT_DEFS.slice().reverse().map(s => s.name);
-function cardSortKey(c) {
-  if (c.type === 'wizard') return [-2, 0];
-  if (c.type === 'jester') return [999, 0];
-  const isTrump = G && G.trumpSuit && c.suit === G.trumpSuit;
-  const groupIdx = isTrump ? -1 : SUIT_DESC_ORDER.indexOf(c.suit);
-  return [groupIdx, -c.rank];
-}
-function sortedHandFor(hand) {
-  return hand.slice().sort((a, b) => {
-    const ka = cardSortKey(a), kb = cardSortKey(b);
-    return ka[0] - kb[0] || ka[1] - kb[1];
-  });
-}
-
-// ---------- Game state ----------
-let G = null;
-
-function newGame(numPlayers, useMajors, difficulty) {
-  const cfg = PLAYER_CONFIG[numPlayers];
-  const players = [];
-  players.push({ id:0, name:'You', isHuman:true, vp:0, star:0, arrow:0, skull:0, arcana:[] });
-  for (let i = 1; i < numPlayers; i++) {
-    players.push({ id:i, name:'AI ' + i, isHuman:false, vp:0, star:0, arrow:0, skull:0, arcana:[] });
-  }
-  G = {
-    numPlayers, useMajors, cfg, players,
-    difficulty: difficulty || 'medium',
-    dealerIndex: 0,
-    roundNum: 0,
-    handSize: cfg.start - 1, // will be incremented to cfg.start on first newHand()
-    maxHandSize: cfg.max,
-    phase: 'setup',
-    log: [],
-    maDeck: useMajors ? buildMADeck(numPlayers) : [],
-    maDiscard: [],
-    maAuctionTable: [],
-  };
-  addLog('New game started: ' + numPlayers + ' players, AI difficulty: ' + G.difficulty + '.');
-  newHand();
-}
-
-function addLog(msg) { G.log.unshift(msg); if (G.log.length > 40) G.log.pop(); }
-
-function newHand() {
-  G.roundNum += 1;
-  G.handSize += 1;
-  if (G.handSize > G.maxHandSize) { G.phase = 'gameEnd'; render(); return; }
-
-  // Dealer rotation: round 1 = human/host (index 0). Subsequent = highest cumulative VP, random tie-break.
-  if (G.roundNum > 1) {
-    let maxVP = Math.max(...G.players.map(p => p.vp));
-    let candidates = G.players.filter(p => p.vp === maxVP);
-    G.dealerIndex = candidates[Math.floor(Math.random() * candidates.length)].id;
-  }
-
+// ══════════════════════════════════════════════════════════
+//  DEALING
+// ══════════════════════════════════════════════════════════
+function dealHand() {
   const deck = buildDeck(G.numPlayers);
-  G.players.forEach(p => { p.hand = []; p.bid = null; p.tricksWon = 0; p.handArrow = 0; p.handStar = 0; p.handSkull = 0; });
-
-  // --- Phase 1: joker distribution ---
-  // Hand 1: every player gets exactly one joker (random Wizard/Jester) — no VP history yet.
-  // Hand 2+: the winning player(s) (tied for max VP) get ZERO jokers. All jokers are
-  // distributed among the rest, in ascending-VP order, cycling through that list as many
-  // times as needed to place every joker (so the lowest-VP players can end up with more
-  // than one). Every player receives the SAME number of phase-1 cards — winners and any
-  // non-winner who received fewer jokers than the max get non-joker cards to fill the gap.
-  let jokerPool = deck.filter(c => c.type !== 'suit');
-  let restPool = deck.filter(c => c.type === 'suit');
-  const phase1 = {}; // playerId -> array of cards received this phase
-
-  if (G.roundNum === 1) {
-    shuffle(G.players).forEach(p => {
-      phase1[p.id] = jokerPool.length ? [jokerPool.shift()] : [restPool.shift()];
-    });
-  } else {
-    const maxVP = Math.max(...G.players.map(p => p.vp));
-    let eligible = G.players.filter(p => p.vp !== maxVP);
-    if (!eligible.length) eligible = G.players.slice(); // full tie — no one to exclude
-    const cycleOrder = shuffle(eligible).sort((a, b) => a.vp - b.vp);
-    G.players.forEach(p => { phase1[p.id] = []; });
-
-    let i = 0;
-    // Cap: no single player receives more than 4 jokers in one hand, even in extreme
-    // tie scenarios. Once every eligible player has hit the cap (or the hand-size safety
-    // cap), any leftover jokers fall back into the normal randomized deal.
-    const JOKER_CAP_PER_HAND = 4;
-    let sinceLastAssign = 0;
-    while (jokerPool.length && sinceLastAssign < cycleOrder.length) {
-      const p = cycleOrder[i % cycleOrder.length];
-      if (phase1[p.id].length < JOKER_CAP_PER_HAND && phase1[p.id].length < G.handSize) {
-        phase1[p.id].push(jokerPool.shift());
-        sinceLastAssign = 0;
-      } else {
-        sinceLastAssign++;
-      }
-      i++;
-    }
-    const phase1Size = Math.min(Math.max(...G.players.map(p => phase1[p.id].length), 0), G.handSize);
-    G.players.forEach(p => {
-      while (phase1[p.id].length < phase1Size && restPool.length) {
-        phase1[p.id].push(restPool.shift());
-      }
-    });
-
-    // Any jokers left over once every eligible player has hit the cap are removed from
-    // play entirely for this hand — they do NOT fall back into the normal deal, so a
-    // winner can never end up with one.
-    G.maDiscardedJokersThisHand = jokerPool.length;
-    jokerPool = [];
+  // Assign joker types randomly (3 TD, 3 TC)
+  const jokers = deck.filter(c=>c.isJoker);
+  shuffle(jokers);
+  jokers.forEach((j,i)=>{ j.jokerType = i<3 ? 'TD' : 'TC'; });
+  // Clear player hands/bt/captured
+  G.players.forEach(p=>{ p.hand=[]; p.bt=[]; p.capturedCards=[]; });
+  // Joker bonus: give 2 jokers to bonus player first (always, even in cheat mode)
+  const allJokers = [...jokers];
+  let dealtJokers = [];
+  if (G.jokerBonusPlayer !== null) {
+    const bonusP = G.players[G.jokerBonusPlayer];
+    const twoJokers = allJokers.splice(0,2);
+    bonusP.hand.push(...twoJokers);
+    dealtJokers = twoJokers;
   }
-  G.players.forEach(p => { p.hand.push(...phase1[p.id]); });
-
-  const dealtSoFar = Object.values(phase1).reduce((s, arr) => s + arr.length, 0) / G.numPlayers;
-  const remainingDeck = shuffle([...jokerPool, ...restPool]);
-
-  // Deal the rest of the hand normally, starting from player left of dealer
-  let idx = (G.dealerIndex + 1) % G.numPlayers;
-  for (let c = 0; c < G.handSize - dealtSoFar; c++) {
-    for (let i = 0; i < G.numPlayers; i++) {
-      const p = G.players[(idx + i) % G.numPlayers];
-      if (remainingDeck.length) p.hand.push(remainingDeck.shift());
+  // Cheat mode: give all remaining jokers to the first human player
+  if(G.cheatJokers){
+    const humanPlayer = G.players.find(p=>!p.isAI);
+    if(humanPlayer && allJokers.length > 0){
+      const sortedRemaining = [...allJokers].sort((a,b)=>a.jokerType==='TD'?-1:1);
+      humanPlayer.hand.push(...sortedRemaining);
+      allJokers.length = 0; // none go back to pool
     }
   }
-
-  // Trump: flip next card if any remain
+  // Remaining jokers go back into deck pool
+  const remainingJokers = allJokers;
+  const suitedCards = deck.filter(c=>!c.isJoker);
+  const pool = shuffle([...suitedCards, ...remainingJokers]);
+  // Deal evenly — bonus player gets 2 fewer from pool
+  const baseHandSize = Math.floor(deck.length / G.numPlayers);
+  G.players.forEach(p => {
+    const need = baseHandSize - p.hand.length;
+    p.hand.push(...pool.splice(0, need));
+  });
+  // Sort hands
+  G.players.forEach(p => { p.hand = sortCards(p.hand); });
+  // Reset reveal state
+  G.reveals = [];
+  G.triggeredSuits = new Set();
   G.trumpSuit = null;
-  G.trumpCard = null;
-  if (remainingDeck.length) {
-    const up = remainingDeck.shift();
-    G.trumpCard = up;
-    if (up.type === 'wizard') {
-      // Dealer chooses trump suit (AI dealer picks its most common suit; human dealer prompted)
-      G.pendingTrumpChoice = true;
-    } else if (up.type === 'jester') {
-      G.trumpSuit = null; // no trump this hand
-    } else {
-      G.trumpSuit = up.suit;
-    }
-  }
-
-  // Team formation now happens after Bidding + (optional) MA Draft — see afterBidding().
-
-  // Bid order: starts left of dealer, dealer bids last
-  G.bidOrder = [];
-  for (let i = 1; i <= G.numPlayers; i++) G.bidOrder.push((G.dealerIndex + i) % G.numPlayers);
-  G.bidTurnPtr = 0;
-  G.bidsSoFar = [];
-
-  G.leadPlayer = (G.dealerIndex + 1) % G.numPlayers;
+  G.plusSuit = null;
+  G.minusSuit = null;
+  G.leadNextHandPlayer = null;
+  G.chooserPlayer = null;
+  G.trickNum = 1;
   G.currentTrick = [];
-  G.ledSuit = null;
-  G.wizardLedThisTrick = false;
-  G.trickNum = 0;
-  G.maEffects = {}; // per-trick active Major Arcana effects, keyed by trickNum
-  G.players.forEach(p => { p.maActivatedThisTrick = false; });
-
-  G.phase = G.pendingTrumpChoice ? 'trumpChoice' : 'bidding';
-  addLog('--- Round ' + G.roundNum + ' (' + G.handSize + ' cards) — dealer: ' + G.players[G.dealerIndex].name + ' ---');
+  G.round = 1;
+  G.round2Passed = [];
+  G.round2Played = [];
+  G.trickWinner = null;
+  G.tcPlayedTotal = 0;
+  G.tdPlayedInTrick = false;
+  G.starScoredIds = new Set();
+  // Set trick leader
+  if (G.nextHandLeader !== null) {
+    G.trickLeader = G.nextHandLeader;
+  } else {
+    G.trickLeader = 0; // first hand: player 0 (First Lead set after team formation)
+  }
+  G.currentPlayerIdx = G.trickLeader;
 }
 
-// Divides `list` into `numTeams` groups via snake draft (1,2,3,3,2,1,1,2,3...)
-// ordered by VP descending (random tie-break), so teams stay balanced by standing.
-function snakeDraftTeams(list, numTeams) {
-  const sorted = shuffle(list).sort((a, b) => b.vp - a.vp);
-  const teams = Array.from({ length: numTeams }, () => []);
-  let t = 0, dir = 1;
-  sorted.forEach(p => {
-    teams[t].push(p);
-    if (dir === 1) { if (t === numTeams - 1) dir = -1; else t++; }
-    else { if (t === 0) dir = 1; else t--; }
-  });
-  return teams;
-}
-
-
-function assignTeams() {
-  if (G.roundNum === 1) {
-    // Hand 1: no VP history yet — split into 2 balanced teams. 3P collapses to a
-    // single team of 3, since a 2-team split there would leave a team of size 1
-    // (minimum team size is 2).
-    if (G.numPlayers === 3) {
-      G.players.forEach(p => { p.team = 'A'; });
-      return;
+function sortCards(cards) {
+  return [...cards].sort((a,b)=>{
+    if (a.isJoker !== b.isJoker) return a.isJoker ? -1 : 1;
+    if (a.isJoker && b.isJoker) {
+      if (a.jokerType !== b.jokerType) return a.jokerType==='TD' ? -1 : 1;
+      return SUITS.indexOf(a.suit)-SUITS.indexOf(b.suit);
     }
-    const teams = snakeDraftTeams(G.players, 2);
-    teams[0].forEach(p => { p.team = 'A'; });
-    teams[1].forEach(p => { p.team = 'B'; });
-    return;
-  }
-
-  // Hand 2+: solo = every player currently tied for the VP lead (however many that is).
-  // Everyone else splits into teams of minimum size 2 via snake draft. If that would
-  // leave exactly one leftover player (no valid partner), the whole hand collapses to
-  // all-solo instead.
-  const maxVP = Math.max(...G.players.map(p => p.vp));
-  const solos = G.players.filter(p => p.vp === maxVP);
-  const remaining = G.players.filter(p => p.vp !== maxVP);
-
-  if (remaining.length === 1) {
-    G.players.forEach(p => { p.team = 'solo'; });
-    return;
-  }
-  solos.forEach(p => { p.team = 'solo'; });
-  if (remaining.length === 0) return; // everyone tied — already all solo
-
-  const numTeams = Math.max(1, Math.floor(remaining.length / 2));
-  const pairTeams = snakeDraftTeams(remaining, numTeams);
-  pairTeams.forEach((teamArr, idx) => {
-    teamArr.forEach(p => { p.team = 'pair' + (idx + 1); });
+    const si = SUITS.indexOf(a.suit)-SUITS.indexOf(b.suit);
+    if (si!==0) return si;
+    return a.rank-b.rank;
   });
 }
 
-function chooseTrump(suitName) {
-  G.trumpSuit = suitName;
-  G.pendingTrumpChoice = false;
-  G.phase = 'bidding';
-  addLog(G.players[G.dealerIndex].name + ' chose ' + suitName + ' as trump.');
-  render();
-  maybeAdvanceBidding();
-}
-
-// ---------- Bidding ----------
-function tricksAvailable() { return G.handSize; }
-
-function isRestrictedBid(playerIdx, bidVal) {
-  // Only the dealer (last bidder) is restricted
-  if (playerIdx !== G.dealerIndex) return false;
-  const sumOthers = G.bidsSoFar.reduce((s, b) => s + b.bid, 0);
-  return (sumOthers + bidVal) === tricksAvailable();
-}
-
-function submitBid(playerIdx, bidVal) {
-  G.players[playerIdx].bid = bidVal;
-  G.bidsSoFar.push({ player: playerIdx, bid: bidVal });
-  addLog(G.players[playerIdx].name + ' bids ' + bidVal + '.');
-  G.bidTurnPtr++;
-}
-
-function maybeAdvanceBidding() {
-  if (G.bidTurnPtr >= G.bidOrder.length) {
-    afterBidding();
-    return;
-  }
-  const nextPlayer = G.bidOrder[G.bidTurnPtr];
-  if (!G.players[nextPlayer].isHuman) {
-    setTimeout(() => {
-      const bid = aiChooseBid(nextPlayer);
-      submitBid(nextPlayer, bid);
-      render();
-      maybeAdvanceBidding();
-    }, 500);
-  } else {
-    render(); // show bid modal for human
-  }
-}
-
-// Bidding is complete. Next: MA Draft (if enabled), then Team Assignment, then Trick Play.
-function afterBidding() {
-  if (G.useMajors) {
-    startMADraft();
-  } else {
-    assignTeams();
-    G.phase = 'playing';
-    render();
-    maybeAITurn();
-  }
-}
-
-function startMADraft() {
-  G.phase = 'maDraft';
-  topUpMAAuction();
-  // Pick order: ascending VP (catch-up), random tie-break
-  G.maDraftOrder = shuffle(G.players).sort((a, b) => a.vp - b.vp).map(p => p.id);
-  G.maDraftIdx = 0;
-  addLog('✦ Arcana Draft — ' + G.maAuctionTable.length + ' cards available.');
-  render();
-  advanceMADraft();
-}
-
-function advanceMADraft() {
-  if (G.maDraftIdx >= G.maDraftOrder.length || G.maAuctionTable.length === 0) {
-    topUpMAAuction(); // leave table topped up for next hand
-    addLog('✦ Arcana draft complete.');
-    assignTeams();
-    G.phase = 'playing';
-    render();
-    maybeAITurn();
-    return;
-  }
-  const seat = G.maDraftOrder[G.maDraftIdx];
-  if (!G.players[seat].isHuman) {
-    setTimeout(() => {
-      const pick = G.maAuctionTable[Math.floor(Math.random() * G.maAuctionTable.length)];
-      maDraftPick(seat, pick.id);
-    }, 500);
-  } else {
-    render(); // show inline draft bar for human
-  }
-}
-
-function maDraftPick(seat, cardId) {
-  const ci = G.maAuctionTable.findIndex(c => c.id === cardId);
-  if (ci === -1) return;
-  const card = G.maAuctionTable.splice(ci, 1)[0];
-  const player = G.players[seat];
-  player.arcana.push(card);
-  addLog(player.name + ' drafts ' + card.label + '.');
-  G.maDraftIdx++;
-  render();
-  advanceMADraft();
-}
-
-function aiChooseBid(playerIdx) {
-  if (G.difficulty === 'hard') return aiChooseBidHard(playerIdx);
-
-  const p = G.players[playerIdx];
-  // Easy/Medium heuristic: count strong cards (Wizards, high trump, high off-suit)
-  let est = 0;
-  p.hand.forEach(c => {
-    if (c.type === 'wizard') est += 1;
-    else if (c.type === 'jester') est += 0;
-    else if (G.trumpSuit && c.suit === G.trumpSuit && c.rank >= 10) est += 0.7;
-    else if (c.rank >= 12) est += 0.5;
-    else if (c.rank >= 9) est += 0.2;
+// ══════════════════════════════════════════════════════════
+//  BIDDING TABLEAU SETUP
+// ══════════════════════════════════════════════════════════
+function setupBiddingTableaux() {
+  G.players.forEach(p => {
+    p.bt = [];
+    const jokers = sortCards(p.hand.filter(c=>c.isJoker)); // TD first then TC
+    const pivots = p.hand.filter(c=>!c.isJoker && c.rank===G.pivotRank);
+    let toMove = [...jokers];
+    const remaining = 6 - toMove.length;
+    toMove = [...toMove, ...pivots.slice(0,remaining)];
+    // Move to BT
+    p.bt = toMove;
+    p.hand = p.hand.filter(c=>!toMove.includes(c));
+    p.hand = sortCards(p.hand);
   });
-  let bid = Math.round(est);
-  bid = Math.max(0, Math.min(G.handSize, bid));
-  if (isRestrictedBid(playerIdx, bid)) {
-    bid = bid + 1 <= G.handSize ? bid + 1 : Math.max(0, bid - 1);
-  }
-  return bid;
 }
 
-// Hard difficulty: "cheats" — sees every other player's actual hand. For each of its
-// own cards, checks whether ANY card anywhere else on the table (across all opponents,
-// combined) would beat it — a true global topper, not a rank-threshold guess.
-function aiChooseBidHard(playerIdx) {
-  const p = G.players[playerIdx];
-  const allOtherCards = G.players.filter(pl => pl.id !== playerIdx).flatMap(pl => pl.hand);
-  let est = 0;
+// ══════════════════════════════════════════════════════════
+//  CARD RENDERING
+// ══════════════════════════════════════════════════════════
+function renderCard(card, opts={}) {
+  const {selectable=false, selected=false, inTrick=false, replaced=false} = opts;
+  const div = document.createElement('div');
+  // Suit/Joker classes
+  const sc = card.isJoker ? 'bzf-sc-Joker' : 'bzf-sc-'+card.suit;
+  const sbg = card.isJoker ? 'bzf-sbg-Joker' : 'bzf-sbg-'+card.suit;
+  const selCls = selected ? ' sel' : '';
+  const handCls = selectable ? ' hand' : '';
+  const repCls = replaced ? ' trick-card-replaced' : '';
+  const tcCls = (card.isJoker && card.jokerType==='TC') || (!card.isJoker && (card.rank===2 || card.rank===9)) ? ' dual-wide' : '';
+  div.className = `bzf-card ${sc} ${sbg}${selCls}${handCls}${repCls}${tcCls}`;
+  div.dataset.cardId = card.id;
+  // Content
+  let rankStr, suitIcon, vpStrip='', vpFace='', vpColor='var(--text)', isWide=false;
+  if (card.isJoker) {
+    rankStr = card.jokerType||'?';
+    suitIcon = SUIT_ICONS[card.suit]||'';
+    vpStrip = card.jokerType==='TD' ? '▲' : '▲☠';
+    vpFace = card.jokerType==='TD' ? '+5' : '+5 -5';
+  } else {
+    const ri = RANK_INFO[card.rank];
+    rankStr = ri.display;
+    suitIcon = SUIT_ICONS[card.suit];
+    vpStrip = ri.vpLabel||'';
+    const parts = [];
+    if(ri.starVP)  parts.push((ri.starVP>0?'+':'')+ri.starVP);
+    if(ri.arrowVP) parts.push((ri.arrowVP>0?'+':'')+ri.arrowVP);
+    if(ri.skullVP) parts.push((ri.skullVP>0?'+':'')+ri.skullVP);
+    vpFace = parts.join(' ');
+    isWide = rankStr.length > 2;
+  }
+  const isPivot = !card.isJoker && G.pivotRank && card.rank===G.pivotRank;
+  const wideCls = isWide ? ' wide' : '';
+  const jokerRainbow = card.isJoker ? ' bzf-rainbow' : '';
+  div.innerHTML = `
+    <div class="bzf-c-strip">
+      <span class="bzf-c-strip-rank">${rankStr}</span>
+      <span class="bzf-c-strip-suit">${suitIcon}</span>
+      <span class="bzf-c-strip-vp" style="color:${vpColor}">${vpStrip}</span>
+    </div>
+    <div class="bzf-c-face">
+      ${isPivot ? '<span class="pivot-badge">P</span>' : ''}
+      <span class="bzf-c-big-rank${wideCls}${jokerRainbow}">${rankStr}</span>
+      <span class="bzf-c-big-suit">${suitIcon}</span>
+      <span class="bzf-c-vp-face" style="color:${vpColor}">${vpFace||'&nbsp;'}</span>
+    </div>`;
+  return div;
+}
 
-  p.hand.forEach(c => {
-    if (c.type === 'wizard') { est += 1; return; }
-    if (c.type === 'jester') return;
-    const isTrump = G.trumpSuit && c.suit === G.trumpSuit;
-    const beaten = allOtherCards.some(oc => {
-      if (oc.type === 'wizard') return true;
-      if (oc.type === 'jester') return false;
-      const ocTrump = G.trumpSuit && oc.suit === G.trumpSuit;
-      if (ocTrump && !isTrump) return true;
-      if (ocTrump && isTrump) return oc.rank > c.rank;
-      if (!ocTrump && !isTrump && oc.suit === c.suit) return oc.rank > c.rank;
-      return false;
+function renderCardBack() {
+  const div = document.createElement('div');
+  div.className='card-back';
+  div.textContent='✦';
+  return div;
+}
+
+// ══════════════════════════════════════════════════════════
+//  SETUP SCREEN
+// ══════════════════════════════════════════════════════════
+let _pc=5;
+let _gl='medium';
+const GL_HANDS={short:4,medium:7,long:10};
+let _isAI=[false,true,true,true,true];
+let _cheatJokers=false;
+
+function toggleCheat(){
+  _cheatJokers=!_cheatJokers;
+  const toggle=document.getElementById('cheat-toggle');
+  const knob=document.getElementById('cheat-knob');
+  toggle.style.background=_cheatJokers?'var(--purple)':'var(--bg3)';
+  knob.style.left=_cheatJokers?'23px':'3px';
+  knob.style.background=_cheatJokers?'#fff':'var(--text3)';
+}
+
+function setGL(gl){
+  _gl=gl;
+  ['short','medium','long'].forEach(g=>{
+    document.getElementById(`gl-${g}`).classList.toggle('active',g===gl);
+  });
+}
+function setPC(n) {
+  _pc = n;
+  document.querySelectorAll('.pc-btn').forEach((b,i)=>b.classList.toggle('active',[3,4,5,6][i]===n));
+  // Keep existing AI flags, extend if needed
+  while(_isAI.length < n) _isAI.push(true);
+  buildPlayerSlots();
+}
+function toggleAI(i, isAI) {
+  _isAI[i] = isAI;
+  const row = document.getElementById(`pslot${i}`);
+  row.querySelector('.btn-human').classList.toggle('active-human', !isAI);
+  row.querySelector('.btn-ai').classList.toggle('active-ai', isAI);
+}
+function buildPlayerSlots() {
+  const el = document.getElementById('player-slots');
+  el.innerHTML='';
+  const names=['You','Bot 2','Bot 3','Bot 4','Bot 5','Bot 6'];
+  for (let i=0;i<_pc;i++) {
+    const row = document.createElement('div'); row.className='p-slot'; row.id=`pslot${i}`;
+    const num = document.createElement('div'); num.className='p-slot-num'; num.textContent=i+1;
+    const inp = document.createElement('input'); inp.className='p-slot-name';
+    inp.placeholder=`Player ${i+1}`; inp.id=`pname${i}`;
+    inp.value = names[i]||`Player ${i+1}`;
+    const tog = document.createElement('div'); tog.className='p-slot-ai';
+    const bh = document.createElement('button'); bh.className='btn-human'; bh.textContent='Human';
+    const ba = document.createElement('button'); ba.className='btn-ai'; ba.textContent='AI';
+    const ai = _isAI[i]!==undefined ? _isAI[i] : (i>0);
+    _isAI[i]=ai;
+    if(!ai) bh.classList.add('active-human'); else ba.classList.add('active-ai');
+    bh.onclick=()=>toggleAI(i,false);
+    ba.onclick=()=>toggleAI(i,true);
+    tog.append(bh,ba);
+    row.append(num,inp,tog);
+    el.appendChild(row);
+  }
+}
+function startGame() {
+  const names=[];
+  const aiFlags=[];
+  for(let i=0;i<_pc;i++){
+    const v=document.getElementById(`pname${i}`).value.trim();
+    names.push(v||`Player ${i+1}`);
+    aiFlags.push(_isAI[i]||false);
+  }
+  initState(names, aiFlags);
+  G.cumVP = G.players.map(()=>0);
+  G.handNum=1;
+  G.totalHands=GL_HANDS[_gl];
+  G.cheatJokers=_cheatJokers;
+  G.pivotRank=4;
+  G.jokerBonusPlayer=null;
+  G.nextHandLeader=null;
+  G.pivotChooser=null;
+  dealHand();
+  setupBiddingTableaux();
+  showPivotDeclaration();
+}
+function backToSetup(){
+  showScreen('setup-screen');
+}
+
+// ══════════════════════════════════════════════════════════
+//  SCREEN MANAGEMENT
+// ══════════════════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+// ══════════════════════════════════════════════════════════
+//  PIVOT DECLARATION
+// ══════════════════════════════════════════════════════════
+function showPivotDeclaration() {
+  const ri = RANK_INFO[G.pivotRank];
+  document.getElementById('pivot-rank-display').textContent = ri.display;
+  document.getElementById('pivot-rank-name').textContent = ri.name.toUpperCase();
+  const eligible = PIVOT_ELIGIBLE[G.numPlayers].map(r=>RANK_INFO[r].name).join(', ');
+  document.getElementById('pivot-eligible-display').textContent =
+    `Eligible pivot ranks for this game: ${eligible}`;
+  showScreen('pivot-screen');
+}
+function proceedToTeams() {
+  showTeamFormation();
+}
+
+// ══════════════════════════════════════════════════════════
+//  TEAM FORMATION
+// ══════════════════════════════════════════════════════════
+let _teamState = {};
+
+function showTeamFormation() {
+  autoFormTeams();
+  // Show team screen briefly so human can see the teams
+  renderBTDisplayStatic();
+  renderTeamResultStatic();
+  document.getElementById('team-pick-box').style.display='none';
+  document.getElementById('team-result-box').style.display='block';
+  showScreen('team-screen');
+}
+
+function renderBTDisplayStatic() {
+  const el = document.getElementById('bt-display');
+  el.innerHTML='';
+  G.players.forEach(p=>{
+    const row=document.createElement('div'); row.className='bt-player-row';
+    const nm=document.createElement('div'); nm.className='bt-pname';
+    nm.textContent=p.name+(p.isAI?' 🤖':'');
+    const cards=document.createElement('div'); cards.className='bt-cards-row';
+    p.bt.forEach(c=>cards.appendChild(renderCard(c)));
+    row.append(nm,cards);
+    el.appendChild(row);
+  });
+}
+
+function renderTeamResultStatic() {
+  const el=document.getElementById('team-display');
+  el.innerHTML='';
+  ['A','B'].forEach(team=>{
+    const row=document.createElement('div');
+    row.className=`team-row team-${team.toLowerCase()}`;
+    const label=document.createElement('div'); label.className='team-row-label';
+    label.style.color=team==='A'?'#1a4880':'#8a1010';
+    label.textContent=`Team ${team}`;
+    row.appendChild(label);
+    G.players.filter(p=>p.team===team).forEach(p=>{
+      const nm=document.createElement('div'); nm.className='team-row-name';
+      nm.textContent=p.name+(p.isLead?' (Lead)':'')+(p.isAI?' 🤖':'');
+      row.appendChild(nm);
     });
-    if (!beaten) est += 1;
+    el.appendChild(row);
   });
-
-  let bid = Math.round(est);
-  bid = Math.max(0, Math.min(G.handSize, bid));
-  if (isRestrictedBid(playerIdx, bid)) {
-    bid = bid + 1 <= G.handSize ? bid + 1 : Math.max(0, bid - 1);
-  }
-  return bid;
 }
 
-// ---------- Trick play ----------
-function legalPlays(playerIdx) {
-  const p = G.players[playerIdx];
-  if (!G.ledSuit) return p.hand; // free lead, or led by wizard/jester
-  const followers = p.hand.filter(c => c.type === 'suit' && c.suit === G.ledSuit);
-  if (followers.length === 0) return p.hand; // no suit cards, anything goes
-  // Must follow suit, but wizards/jesters are always exempt
-  return p.hand.filter(c => (c.type === 'suit' && c.suit === G.ledSuit) || c.type === 'wizard' || c.type === 'jester');
+function getPlayersByVP() {
+  return [...G.players].sort((a,b)=>{
+    const va = G.cumVP[a.id];
+    const vb = G.cumVP[b.id];
+    return va-vb;
+  });
 }
 
-function playCard(playerIdx, cardId) {
-  const p = G.players[playerIdx];
-  const ci = p.hand.findIndex(c => c.id === cardId);
-  if (ci === -1) return;
-  const card = p.hand.splice(ci, 1)[0];
-  G.currentTrick.push({ player: playerIdx, card });
-
-  // Jester: +5 Star VP goes to whoever PLAYS it, immediately — independent of
-  // who ends up capturing (winning) the trick.
-  if (card.type === 'jester') {
-    p.handStar += card.eVP;
-  }
-
-  if (G.currentTrick.length === 1) {
-    if (card.type === 'wizard') {
-      G.ledSuit = null; // wizard led — no suit restriction
-      G.wizardLedThisTrick = true;
-    } else if (card.type === 'jester') {
-      G.ledSuit = null; // jester led — suit set by next non-jester card
-    } else {
-      G.ledSuit = card.suit;
-    }
-  } else if (G.ledSuit === null && !G.wizardLedThisTrick && card.type === 'suit') {
-    // first non-jester card sets the lead suit if jester led first
-    G.ledSuit = card.suit;
-  }
-
-  addLog(p.name + ' plays ' + cardLabel(card) + '.');
-
-  if (G.currentTrick.length === G.numPlayers) {
-    setTimeout(resolveTrick, 700);
-  } else {
-    render();
-    maybeAITurn();
-  }
+function renderTeamScreen() {
+  renderBTDisplay();
+  renderTeamPicking();
 }
 
-function cardLabel(c) {
-  if (c.type === 'wizard') return 'Wizard';
-  if (c.type === 'jester') return 'Jester';
-  if (c.type === 'skip') return '(skips this trick)';
-  return c.face + ' of ' + c.suit;
+function renderBTDisplay() {
+  const el = document.getElementById('bt-display');
+  el.innerHTML='';
+  G.players.forEach(p=>{
+    const row=document.createElement('div'); row.className='bt-player-row';
+    const nm=document.createElement('div'); nm.className='bt-pname'; nm.textContent=p.name;
+    const cards=document.createElement('div'); cards.className='bt-cards-row';
+    p.bt.forEach(c=>cards.appendChild(renderCard(c,{selectable:false})));
+    row.append(nm,cards);
+    el.appendChild(row);
+  });
 }
 
-// ---------- Major Arcana activation ----------
-function activateMA(seat, cardId) {
-  const player = G.players[seat];
-  const ci = player.arcana.findIndex(c => c.id === cardId);
-  if (ci === -1) return;
-  const card = player.arcana[ci];
+function renderTeamPicking() {
+  const pickBox = document.getElementById('team-pick-box');
+  const resultBox = document.getElementById('team-result-box');
+  const title = document.getElementById('team-pick-title');
+  const opts = document.getElementById('pick-options');
 
-  if (card.maId === 'Sage') {
-    if (player.isHuman) {
-      G.pendingSage = { seat, cardId };
-      render();
-    } else {
-      const ranks = [8, 9, 10];
-      finishSageActivation(seat, cardId, ranks[Math.floor(Math.random() * ranks.length)]);
-    }
+  if (_teamState.phase==='done') {
+    pickBox.style.display='none';
+    resultBox.style.display='block';
+    renderTeamResult();
     return;
   }
 
-  player.arcana.splice(ci, 1);
-  G.maDiscard.push(card);
-  player.maActivatedThisTrick = true;
-  const fx = G.maEffects[G.trickNum] || {};
+  pickBox.style.display='block';
+  resultBox.style.display='none';
+  opts.innerHTML='';
 
-  switch (card.maId) {
-    case 'Tower':
-      fx.tower = true;
-      addLog(player.name + ' activates The Tower — Kn/Q/K lose 7 ranks this trick.');
-      break;
-    case 'Star':
-      fx.doubleStars = true;
-      addLog(player.name + ' activates The Star — Star VP doubled this trick.');
-      break;
-    case 'World':
-      fx.worldActive = true;
-      addLog(player.name + ' activates The World — +6▲ per distinct suit in trick.');
-      break;
-    case 'Magician': case 'Priestess': case 'Empress': case 'Emperor': case 'Moon': case 'Sun':
-      fx.suitBonus = { suit: card.suitRef, vp: 10 };
-      addLog(player.name + ' activates ' + card.label + ' — +10▲ if ' + card.suitRef + ' appears in trick.');
-      break;
-    case 'Hanged':
-      fx.hangedSeat = seat;
-      addLog(player.name + ' activates The Hanged Man — skips this trick, leads next.');
-      break;
-    case 'Fortune': {
-      const allArcana = G.players.map(p => p.arcana.slice());
-      G.players.forEach((p, i) => { p.arcana = allArcana[(i - 1 + G.numPlayers) % G.numPlayers]; });
-      addLog(player.name + ' activates Wheel of Fortune — Arcana Tableaux rotate clockwise.');
-      break;
-    }
+  const unaffiliated = G.players.filter(p=>p.team===null);
+
+  if (_teamState.phase==='pickLead1') {
+    title.textContent='SELECT FIRST LEAD (Lowest VP)';
+    // Sort unaffiliated by VP
+    const sorted = [...unaffiliated].sort((a,b)=>G.cumVP[a.id]-G.cumVP[b.id]);
+    // Find min VP
+    const minVP = G.cumVP[sorted[0].id];
+    const tied = sorted.filter(p=>G.cumVP[p.id]===minVP);
+    tied.forEach(p=>{
+      const btn=document.createElement('button'); btn.className='pick-btn';
+      btn.textContent=`${p.name} (${G.cumVP[p.id]} VP)`;
+      btn.onclick=()=>selectLead1(p.id);
+      opts.appendChild(btn);
+    });
+  } else if (_teamState.phase==='lead1PickTeammate') {
+    const lead1 = G.players[_teamState.leads[0]];
+    title.textContent=`${lead1.name.toUpperCase()} — PICK YOUR TEAMMATE`;
+    unaffiliated.filter(p=>p.id!==lead1.id).forEach(p=>{
+      const btn=document.createElement('button'); btn.className='pick-btn';
+      btn.textContent=`${p.name} (${G.cumVP[p.id]} VP)`;
+      btn.onclick=()=>lead1PickTeammate(p.id);
+      opts.appendChild(btn);
+    });
+  } else if (_teamState.phase==='pickLead2') {
+    title.textContent='SELECT SECOND LEAD (Next Lowest VP)';
+    const sorted=[...unaffiliated].sort((a,b)=>G.cumVP[a.id]-G.cumVP[b.id]);
+    const minVP=G.cumVP[sorted[0].id];
+    const tied=sorted.filter(p=>G.cumVP[p.id]===minVP);
+    tied.forEach(p=>{
+      const btn=document.createElement('button'); btn.className='pick-btn';
+      btn.textContent=`${p.name} (${G.cumVP[p.id]} VP)`;
+      btn.onclick=()=>selectLead2(p.id);
+      opts.appendChild(btn);
+    });
+  } else if (_teamState.phase==='alternating') {
+    const currentLeadIdx = _teamState.leads[_teamState.pickTurn % 2];
+    const lead = G.players[currentLeadIdx];
+    title.textContent=`${lead.name.toUpperCase()} — PICK A TEAMMATE`;
+    const avail = G.players.filter(p=>p.team===null);
+    if (avail.length===0) { finishTeams(); return; }
+    avail.forEach(p=>{
+      const btn=document.createElement('button'); btn.className='pick-btn';
+      btn.textContent=`${p.name} (${G.cumVP[p.id]} VP)`;
+      btn.onclick=()=>alternatingPick(p.id);
+      opts.appendChild(btn);
+    });
   }
-  G.maEffects[G.trickNum] = fx;
+}
 
-  if (card.maId === 'Hanged') {
-    render();
-    playSkipForHanged(seat);
+function selectLead1(pid) {
+  _teamState.leads[0]=pid;
+  G.players[pid].team='A';
+  G.players[pid].isLead=true;
+  _teamState.teams.A=[pid];
+  _teamState.phase='lead1PickTeammate';
+  renderTeamPicking();
+}
+function lead1PickTeammate(pid) {
+  G.players[pid].team='A';
+  _teamState.teams.A.push(pid);
+  _teamState.phase='pickLead2';
+  renderTeamPicking();
+}
+function selectLead2(pid) {
+  _teamState.leads[1]=pid;
+  G.players[pid].team='B';
+  G.players[pid].isLead=true;
+  _teamState.teams.B=[pid];
+  // Check if more players need assigning
+  const unaffiliated=G.players.filter(p=>p.team===null);
+  if (unaffiliated.length===0) { finishTeams(); return; }
+  if (unaffiliated.length===1) {
+    // Auto-assign last player to team A (team A always gets more with 5P)
+    lead2AutoTeam(unaffiliated[0].id);
     return;
   }
-  render();
+  // Now lead2 picks a teammate
+  _teamState.phase='lead2PickTeammate';
+  renderLead2PickTeammate();
+}
+function renderLead2PickTeammate() {
+  const title=document.getElementById('team-pick-title');
+  const opts=document.getElementById('pick-options');
+  const lead2=G.players[_teamState.leads[1]];
+  title.textContent=`${lead2.name.toUpperCase()} — PICK YOUR TEAMMATE`;
+  opts.innerHTML='';
+  G.players.filter(p=>p.team===null).forEach(p=>{
+    const btn=document.createElement('button'); btn.className='pick-btn';
+    btn.textContent=`${p.name} (${G.cumVP[p.id]} VP)`;
+    btn.onclick=()=>lead2PickTeammate(p.id);
+    opts.appendChild(btn);
+  });
+}
+function lead2PickTeammate(pid) {
+  G.players[pid].team='B';
+  _teamState.teams.B.push(pid);
+  const unaffiliated=G.players.filter(p=>p.team===null);
+  if (unaffiliated.length===0){finishTeams();return;}
+  _teamState.phase='alternating';
+  _teamState.pickTurn=0; // lead1 goes next
+  renderTeamPicking();
+}
+function lead2AutoTeam(pid) {
+  G.players[pid].team='A';
+  _teamState.teams.A.push(pid);
+  finishTeams();
+}
+function alternatingPick(pid) {
+  const leadIdx=_teamState.leads[_teamState.pickTurn%2];
+  const team=G.players[leadIdx].team;
+  G.players[pid].team=team;
+  _teamState.teams[team].push(pid);
+  _teamState.pickTurn++;
+  const unaffiliated=G.players.filter(p=>p.team===null);
+  if (unaffiliated.length===0){finishTeams();return;}
+  if (unaffiliated.length===1){
+    // auto-assign
+    const lastLeadIdx=_teamState.leads[_teamState.pickTurn%2];
+    const lastTeam=G.players[lastLeadIdx].team;
+    G.players[unaffiliated[0].id].team=lastTeam;
+    _teamState.teams[lastTeam].push(unaffiliated[0].id);
+    finishTeams(); return;
+  }
+  renderTeamPicking();
+}
+function finishTeams() {
+  _teamState.phase='done';
+  // Set trick leader: first hand = Team A Lead (lowest VP = lead1)
+  if (G.nextHandLeader===null) {
+    G.trickLeader=_teamState.leads[0];
+    G.currentPlayerIdx=G.trickLeader;
+  }
+  renderTeamPicking();
+}
+function renderTeamResult() {
+  const el=document.getElementById('team-display');
+  el.innerHTML='';
+  ['A','B'].forEach(team=>{
+    const row=document.createElement('div');
+    row.className=`team-row team-${team.toLowerCase()}`;
+    const label=document.createElement('div'); label.className='team-row-label';
+    label.style.color=team==='A'?'#1a4880':'#8a1010';
+    label.textContent=`Team ${team}`;
+    row.appendChild(label);
+    _teamState.teams[team].forEach(pid=>{
+      const p=G.players[pid];
+      const nm=document.createElement('div'); nm.className='team-row-name';
+      nm.textContent=p.name+(p.isLead?' (Lead)':'');
+      row.appendChild(nm);
+    });
+    el.appendChild(row);
+  });
+}
+function startTrickTaking() {
+  G.phase='tricks';
+  nextHotSeatOrRender();
 }
 
-function finishSageActivation(seat, cardId, rank) {
-  const player = G.players[seat];
-  const ci = player.arcana.findIndex(c => c.id === cardId);
-  if (ci === -1) return;
-  const card = player.arcana.splice(ci, 1)[0];
-  G.maDiscard.push(card);
-  player.maActivatedThisTrick = true;
-  const fx = G.maEffects[G.trickNum] || {};
-  fx.rankBonus = { rank, vp: 4 };
-  G.maEffects[G.trickNum] = fx;
-  addLog(player.name + ' activates The Sage — rank ' + rank + ' cards score +4▲ this trick.');
-  G.pendingSage = null;
-  render();
+// ══════════════════════════════════════════════════════════
+//  HOTSEAT
+// ══════════════════════════════════════════════════════════
+function showHotseat() {
+  const p=G.players[G.currentViewerIdx];
+  document.getElementById('hs-name').textContent=p.name;
+  const team=p.team?`Team ${p.team}`:'';
+  const lead=p.isLead?' · Lead':'';
+  document.getElementById('hs-sub').textContent=`${team}${lead} · ${G.cumVP[p.id]} VP`;
+  showScreen('hotseat-screen');
+}
+function revealHand() {
+  G.currentViewerIdx=G.currentPlayerIdx;
+  renderGameScreen();
+  showScreen('game-screen');
 }
 
-function playSkipForHanged(seat) {
-  const skipCard = { id: 'skip' + seat + '_' + G.trickNum, type: 'skip', cat: 'Neutral', iVP: 0, eVP: 0 };
-  G.currentTrick.push({ player: seat, card: skipCard });
-  addLog(G.players[seat].name + ' skips this trick (Hanged Man).');
-  if (G.currentTrick.length === G.numPlayers) {
-    setTimeout(resolveTrick, 700);
+// ══════════════════════════════════════════════════════════
+//  GAME SCREEN RENDERING
+// ══════════════════════════════════════════════════════════
+function renderGameScreen() {
+  const cp=G.players[G.currentPlayerIdx];
+  // Clear any stale selection if selected card no longer in player's hand/bt
+  if(G.selectedCard){
+    const stillHere=[...cp.hand,...cp.bt].find(c=>c.id===G.selectedCard.id);
+    if(!stillHere){ _selectedCardId=null; _selectedCardSource=null; G.selectedCard=null; }
+  }
+  // Top bar
+  document.getElementById('hand-info').textContent=`Hand ${G.handNum} · Trick ${G.trickNum}`;
+  document.getElementById('pivot-badge').textContent=`Pivot: ${RANK_INFO[G.pivotRank].name}`;
+  // VP scores
+  const vpEl=document.getElementById('vp-scores');
+  vpEl.innerHTML='';
+  G.players.forEach((p,i)=>{
+    const chip=document.createElement('div');
+    chip.className='vp-chip'+(i===G.currentPlayerIdx?' active-player':'');
+    chip.textContent=`${p.name.split(' ')[0]}: ${G.cumVP[i]}`;
+    vpEl.appendChild(chip);
+  });
+  // Reveal track
+  for(let i=0;i<6;i++){
+    const slot=document.getElementById(`rs${i}`);
+    slot.innerHTML='';
+    if(G.reveals[i]){
+      const {suit} = G.reveals[i];
+      const ri = RANK_INFO[G.pivotRank];
+      slot.className=`rs-suit filled-${suit}`;
+      const rankSpan=document.createElement('span');
+      rankSpan.style.cssText='font-weight:800;font-size:0.72rem;';
+      rankSpan.textContent=ri ? ri.display : '?';
+      const suitSpan=document.createElement('span');
+      suitSpan.style.cssText='font-size:0.8rem;';
+      suitSpan.textContent=SUIT_ICONS[suit]||'';
+      slot.append(rankSpan, suitSpan);
+    } else {
+      slot.className='rs-suit';
+      slot.textContent='?';
+    }
+  }
+  // Others zone
+  renderOthers();
+  // Trick zone
+  renderTrick();
+  // Bidding tableau for current player
+  renderBT(cp);
+  // Hand
+  renderHand(cp);
+  // Action bar
+  updateActionBar();
+}
+
+function renderOthers() {
+  const el=document.getElementById('others-zone');
+  el.innerHTML='';
+  G.players.forEach((p,i)=>{
+    if(i===G.currentPlayerIdx) return;
+    const row=document.createElement('div'); row.className='other-player-row';
+    // Colored team banner
+    const banner=document.createElement('div');
+    banner.className=`opr-banner team-${p.team?p.team.toLowerCase():'a'}`;
+    // Body
+    const body=document.createElement('div'); body.className='opr-body';
+    const hdr=document.createElement('div'); hdr.className='opr-header';
+    const nm=document.createElement('div'); nm.className='opr-name';
+    nm.textContent=p.name+(p.isAI?' 🤖':'');
+    const tm=document.createElement('div');
+    tm.className=`opr-team team-${p.team?p.team.toLowerCase():'a'}`;
+    tm.textContent=p.team?`Team ${p.team}`:'?';
+    const hc=document.createElement('div'); hc.className='opr-handcount';
+    hc.textContent=`${p.hand.length} in hand`;
+    hdr.append(nm,tm,hc);
+    // BT cards only
+    const cards=document.createElement('div'); cards.className='opr-cards';
+    p.bt.forEach(c=>cards.appendChild(renderCard(c)));
+    body.append(hdr,cards);
+    row.append(banner,body);
+    el.appendChild(row);
+  });
+}
+
+function renderTrick() {
+  const title=document.getElementById('trick-title');
+  const badge=document.getElementById('trick-round-badge');
+  const leadLbl=document.getElementById('trick-lead-label');
+  const cardsEl=document.getElementById('trick-cards');
+  title.textContent=`TRICK ${G.trickNum}`;
+  badge.textContent=`Round ${G.round}`;
+  const leader=G.players[G.trickLeader];
+  leadLbl.textContent=`Led by ${leader.name}`;
+  cardsEl.innerHTML='';
+  // Determine current trick winner for crown
+  const currentWinner = G.currentTrick.length > 0 ? determineTrickWinner() : null;
+  G.currentTrick.forEach(tc=>{
+    const wrap=document.createElement('div');
+    const isLeader = tc.playerIdx===G.trickLeader;
+    wrap.className='trick-card-wrap'+(isLeader?' is-leader':'');
+    // Lead indicator above name for leader
+    if(isLeader){
+      const leadInd=document.createElement('div'); leadInd.className='lead-indicator';
+      leadInd.textContent='⬡ LEAD';
+      wrap.appendChild(leadInd);
+    }
+    const lbl=document.createElement('div');
+    const trickPlayer=G.players[tc.playerIdx];
+    lbl.className=`trick-player-label team-${trickPlayer.team?trickPlayer.team.toLowerCase():'a'}`;
+    const isWinning = currentWinner===tc.playerIdx;
+    lbl.textContent=(isWinning?'👑 ':'')+trickPlayer.name;
+    const cardEl=renderCard(tc.card,{replaced:tc.replaced});
+    if(tc.replaced){
+      // Show the replacement Joker below
+    }
+    wrap.append(lbl,cardEl);
+    if(tc.replacedBy){
+      const jlbl=document.createElement('div'); jlbl.className='trick-player-label';
+      jlbl.textContent='→';
+      const jcard=renderCard(tc.replacedBy);
+      wrap.append(jlbl,jcard);
+    }
+    cardsEl.appendChild(wrap);
+  });
+}
+
+function renderBT(player) {
+  const el=document.getElementById('bt-cards');
+  const title=document.getElementById('bt-title');
+  const isHuman = !player.isAI;
+  const humanPlayer = G.players.find(p=>!p.isAI);
+  const isOwn = humanPlayer && player.id===humanPlayer.id;
+  title.textContent = isOwn
+    ? 'YOUR BIDDING TABLEAU'
+    : `${player.name.toUpperCase()}'S BIDDING TABLEAU`;
+  el.innerHTML='';
+  player.bt.forEach(c=>{
+    const isSelected=G.selectedCard&&G.selectedCard.id===c.id;
+    const cardEl=renderCard(c,{selectable:true,selected:isSelected});
+    cardEl.onclick=()=>selectCard(c.id,'bt');
+    el.appendChild(cardEl);
+  });
+}
+
+function renderHand(player) {
+  document.getElementById('hand-player-name').textContent=player.name;
+  const tb=document.getElementById('hand-team-badge');
+  tb.className=`opr-team team-${player.team?player.team.toLowerCase():'a'}`;
+  tb.textContent=player.team?`Team ${player.team}`:'?';
+  const banner=document.getElementById('hand-banner');
+  banner.className=`team-${player.team?player.team.toLowerCase():'a'}`;
+  banner.id='hand-banner';
+  document.getElementById('hand-count').textContent=
+    `${player.hand.length} in hand + ${player.bt.length} in tableau`;
+  const el=document.getElementById('hand-cards');
+  el.innerHTML='';
+  player.hand.forEach(c=>{
+    const cardEl=renderCard(c,{selectable:true,selected:G.selectedCard&&G.selectedCard.id===c.id});
+    cardEl.onclick=()=>selectCard(c.id,'hand');
+    el.appendChild(cardEl);
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+//  CARD SELECTION
+// ══════════════════════════════════════════════════════════
+let _selectedCardId = null;
+let _selectedCardSource = null; // 'hand' or 'bt'
+
+function selectCard(cardId, source) {
+  if(_selectedCardId===cardId){
+    // Deselect
+    _selectedCardId=null; _selectedCardSource=null; G.selectedCard=null;
   } else {
-    render();
-    maybeAITurn();
+    _selectedCardId=cardId; _selectedCardSource=source;
+    G.selectedCard=findCard(cardId);
+    // If card not found (stale), clear
+    if(!G.selectedCard){ _selectedCardId=null; _selectedCardSource=null; }
+  }
+  renderHand(G.players[G.currentPlayerIdx]);
+  renderBT(G.players[G.currentPlayerIdx]);
+  updateActionBar();
+}
+
+function findCard(id) {
+  const cp=G.players[G.currentPlayerIdx];
+  return [...cp.hand,...cp.bt].find(c=>c.id===id)||null;
+}
+
+function findCardInAll(id) {
+  for(const p of G.players){
+    const f=[...p.hand,...p.bt].find(c=>c.id===id);
+    if(f) return {card:f,player:p};
+  }
+  return null;
+}
+
+// ══════════════════════════════════════════════════════════
+//  ACTION BAR
+// ══════════════════════════════════════════════════════════
+function updateActionBar() {
+  const btnPlay=document.getElementById('btn-play');
+  const btnPass=document.getElementById('btn-pass');
+  const btnEnd=document.getElementById('btn-end-trick');
+  const hint=document.getElementById('action-hint');
+  btnPlay.disabled=true; btnPass.disabled=true; btnEnd.disabled=true;
+
+  if(G.phase!=='tricks') return;
+  const cp=G.players[G.currentPlayerIdx];
+
+  if(G.round===1){
+    const ledCard = G.currentTrick.length>0 ? G.currentTrick[0].card : null;
+    const jokerLed = ledCard && ledCard.isJoker;
+    const isLeading = G.trickLeader===G.currentPlayerIdx;
+    btnPlay.disabled=!G.selectedCard;
+    btnPlay.textContent='Play Card';
+    if(isLeading) hint.textContent='You are leading this trick — play any card.';
+    else if(jokerLed) hint.textContent='A Joker was led — play any card.';
+    else hint.textContent='Must follow led suit if able.';
+  } else {
+    // Round 2: can play a Joker from BT to replace, or pass
+    const alreadyPlayedR2=G.round2Played.includes(G.currentPlayerIdx);
+    const alreadyPassedR2=G.round2Passed.includes(G.currentPlayerIdx);
+    if(alreadyPlayedR2||alreadyPassedR2){
+      // Waiting for others — show end trick if all done
+      const allDone=allPlayersActedR2();
+      btnEnd.disabled=!allDone;
+      hint.textContent=allDone?'All players acted. End the trick.':'Waiting for other players in Round 2.';
+    } else {
+      const canPlayJoker=G.selectedCard && G.selectedCard.isJoker && _selectedCardSource==='bt';
+      btnPlay.disabled=!canPlayJoker;
+      btnPlay.textContent='Play Joker (Replace)';
+      btnPass.disabled=false;
+      hint.textContent='Play a Joker from your Tableau to replace your Round 1 card, or pass.';
+    }
   }
 }
 
-function computeTrickWinner(plays) {
-  if (!plays.length) return null;
-  const firstWizard = plays.find(pl => pl.card.type === 'wizard');
-  if (firstWizard) return firstWizard.player;
-  const contenders = plays.filter(pl => pl.card.type !== 'jester' && pl.card.type !== 'skip');
-  if (contenders.length === 0) {
-    const firstJester = plays.find(pl => pl.card.type === 'jester');
-    return firstJester ? firstJester.player : plays[0].player;
+function allPlayersActedR2() {
+  for(let i=0;i<G.numPlayers;i++){
+    if(!G.round2Played.includes(i)&&!G.round2Passed.includes(i)) return false;
   }
-  let best = contenders[0];
-  for (const pl of contenders.slice(1)) {
-    if (isHigher(pl.card, best.card)) best = pl;
-  }
-  return best.player;
+  return true;
 }
 
+// ══════════════════════════════════════════════════════════
+//  PLAY CARD
+// ══════════════════════════════════════════════════════════
+function playSelected() {
+  if(!G.selectedCard) return;
+  const card=G.selectedCard;
+  const cp=G.players[G.currentPlayerIdx];
+
+  if(G.round===1){
+    playCardR1(cp,card);
+  } else {
+    playJokerR2(cp,card);
+  }
+}
+
+function playCardR1(player, card) {
+  // Validate suit following
+  if(G.currentTrick.length>0 && !card.isJoker){
+    const ledCard=G.currentTrick[0].card;
+    const ledSuit=ledCard.isJoker?null:ledCard.suit;
+    if(ledSuit){
+      const hasLedSuit=[...player.hand,...player.bt].some(c=>!c.isJoker&&c.suit===ledSuit&&c.id!==card.id);
+      if(hasLedSuit && card.suit!==ledSuit){
+        showModal('Must Follow Suit',`You must play a ${ledSuit} card if you have one.`,[],
+          [{label:'OK',action:()=>hideModal(),cls:'primary'}]);
+        return;
+      }
+    }
+  }
+  // Remove from hand/bt
+  if(_selectedCardSource==='hand') player.hand=player.hand.filter(c=>c.id!==card.id);
+  else player.bt=player.bt.filter(c=>c.id!==card.id);
+  // Add to trick
+  G.currentTrick.push({playerIdx:G.currentPlayerIdx,card,round:1,replaced:false,replacedBy:null});
+  // Check pivot trigger
+  if(!card.isJoker && card.rank===G.pivotRank && !G.triggeredSuits.has(card.suit)){
+    triggerReveal(card.suit,G.currentPlayerIdx);
+  }
+  // Track jokers played in R1
+  if(card.isJoker){
+    if(card.jokerType==='TD'){
+      G.tdPlayedInTrick=true;
+    } else {
+      G.tcPlayedTotal++;
+    }
+  }
+  _selectedCardId=null; _selectedCardSource=null; G.selectedCard=null;
+  advanceR1();
+}
+
+function advanceR1() {
+  // Check if trick ends early (TD or 3 TCs in R1)
+  const allPlayedR1=G.currentTrick.filter(t=>t.round===1).length===G.numPlayers;
+  if(!allPlayedR1){
+    // Find next player who hasn't played in R1
+    let next=(G.currentPlayerIdx+1)%G.numPlayers;
+    let tries=0;
+    while(tries<G.numPlayers){
+      const alreadyPlayed=G.currentTrick.some(t=>t.playerIdx===next&&t.round===1);
+      if(!alreadyPlayed) break;
+      next=(next+1)%G.numPlayers;
+      tries++;
+    }
+    G.currentPlayerIdx=next;
+    // If next player has no cards, auto-play... shouldn't happen but guard anyway
+    const nextP=G.players[next];
+    const noCards=nextP.hand.length===0&&nextP.bt.length===0;
+    if(noCards){
+      // They can't play — this shouldn't happen but end hand if all played
+      advanceR1(); return;
+    }
+    nextHotSeatOrRender();
+    return;
+  }
+  // All played R1
+  addLog(`All players played Round 1.`,'imp');
+  // Check for early end
+  if(G.tdPlayedInTrick){
+    addLog('TD played in Round 1 — no Round 2!','reveal');
+    resolveTrick();
+    return;
+  }
+  if(G.tcPlayedTotal>=3){
+    addLog('3 TCs played in Round 1 — no Round 2!','reveal');
+    resolveTrick();
+    return;
+  }
+  // Start Round 2
+  G.round=2;
+  G.round2Passed=[];
+  G.round2Played=[];
+  // Auto-pass any player who has no Jokers in their BT
+  G.players.forEach((p,i)=>{
+    if(!p.bt.some(c=>c.isJoker)) G.round2Passed.push(i);
+  });
+  // If all players auto-passed, resolve immediately
+  if(allPlayersActedR2()){
+    addLog('No Jokers to play — trick resolves.','imp');
+    resolveTrick();
+    return;
+  }
+  // Round 2 starts from trick leader (or first who hasn't acted)
+  let r2start=G.trickLeader;
+  if(G.round2Passed.includes(r2start)){
+    let tries=0;
+    while(G.round2Passed.includes(r2start)&&tries<G.numPlayers){
+      r2start=(r2start+1)%G.numPlayers; tries++;
+    }
+  }
+  G.currentPlayerIdx=r2start;
+  addLog('Round 2 begins — players may play Jokers to replace.','imp');
+  nextHotSeatOrRender();
+}
+
+function passRound2() {
+  G.round2Passed.push(G.currentPlayerIdx);
+  advanceR2();
+}
+
+function playJokerR2(player, joker) {
+  if(!joker.isJoker){return;}
+  // Joker must be from BT
+  if(_selectedCardSource!=='bt'){
+    showModal('Tableau Only','Jokers played in Round 2 must come from your Bidding Tableau.',
+      [],[{label:'OK',action:()=>hideModal(),cls:'primary'}]);
+    return;
+  }
+  // Find the player's R1 card
+  const r1entry=G.currentTrick.find(t=>t.playerIdx===G.currentPlayerIdx&&t.round===1);
+  if(!r1entry){return;}
+  if(r1entry.card.isJoker){
+    showModal('Cannot Replace','You cannot replace a Joker with another Joker.',
+      [],[{label:'OK',action:()=>hideModal(),cls:'primary'}]);
+    return;
+  }
+  // Move R1 card to BT
+  const returnedCard=r1entry.card;
+  player.bt.push(returnedCard);
+  // Remove joker from BT
+  player.bt=player.bt.filter(c=>c.id!==joker.id);
+  // Update trick entry
+  r1entry.replaced=true;
+  r1entry.replacedBy=joker;
+  // Track
+  if(joker.jokerType==='TD'){
+    G.tdPlayedInTrick=true;
+    G.round2Played.push(G.currentPlayerIdx);
+    addLog(`${player.name} plays ${joker.jokerType} in Round 2 — trick ends!`,'reveal');
+    resolveTrick(); return;
+  } else {
+    G.tcPlayedTotal++;
+    G.round2Played.push(G.currentPlayerIdx);
+    if(G.tcPlayedTotal>=3){
+      addLog(`3rd TC played by ${player.name} — trick ends!`,'reveal');
+      resolveTrick(); return;
+    }
+  }
+  _selectedCardId=null; _selectedCardSource=null; G.selectedCard=null;
+  advanceR2();
+}
+
+function advanceR2() {
+  // Move to next player who hasn't acted and has a Joker in BT
+  let next=G.currentPlayerIdx;
+  let tries=0;
+  do {
+    next=(next+1)%G.numPlayers;
+    tries++;
+    if(tries>G.numPlayers) break;
+    // Auto-pass players with no Jokers if not already recorded
+    if(!G.round2Played.includes(next)&&!G.round2Passed.includes(next)){
+      if(!G.players[next].bt.some(c=>c.isJoker)){
+        G.round2Passed.push(next);
+      }
+    }
+  } while(G.round2Played.includes(next)||G.round2Passed.includes(next));
+
+  if(allPlayersActedR2()){
+    G.currentPlayerIdx=G.trickLeader;
+    renderGameScreen();
+    document.getElementById('btn-end-trick').disabled=false;
+    return;
+  }
+  G.currentPlayerIdx=next;
+  nextHotSeatOrRender();
+}
+
+function endTrick() {
+  resolveTrick();
+}
+
+// ══════════════════════════════════════════════════════════
+//  TRICK RESOLUTION
+// ══════════════════════════════════════════════════════════
 function resolveTrick() {
-  const plays = G.currentTrick;
-  const winner = computeTrickWinner(plays);
-  const fx = G.maEffects[G.trickNum] || {};
-
-  const winP = G.players[winner];
-  winP.tricksWon++;
-
-  // Collect VP from all cards in the trick (Star VP doubled this trick if The Star was activated)
-  let starDelta = 0, arrowDelta = 0, skullDelta = 0;
-  plays.forEach(pl => {
-    const c = pl.card;
-    if (c.type === 'skip') return;
-    if (c.type === 'wizard') {
-      arrowDelta += c.eVP;
-    } else if (c.type === 'jester') {
-      // Star VP already credited to the player at play-time (see playCard); only
-      // the Skull penalty applies here, to whoever captures (wins the trick with) it.
-      skullDelta += c.skullVP;
-    } else if (c.cat === 'Star') {
-      starDelta += c.dualVP ? c.eVP : c.iVP;
-    } else if (c.cat === 'StarSkull') {
-      // Rank 9: both components apply together, at capture time.
-      starDelta += c.eVP;
-      skullDelta += c.skullVP;
-    } else if (c.cat === 'Arrow') {
-      arrowDelta += c.eVP;
-    } else if (c.cat === 'Skull') {
-      skullDelta += c.eVP;
+  const winner=determineTrickWinner();
+  G.trickWinner=winner;
+  const winPlayer=G.players[winner];
+  // Give cards to winner
+  G.currentTrick.forEach(tc=>{
+    const activeCard=tc.replacedBy||tc.card;
+    // The replaced card went to BT already; the active card goes to captured
+    winPlayer.capturedCards.push(activeCard);
+    // If replaced: the original card is in BT, not captured
+  });
+  // Score Star VP at resolution
+  G.currentTrick.forEach(tc=>{
+    const activeCard=tc.replacedBy||tc.card;
+    const scorer=G.players[tc.playerIdx];
+    // Star VP: scored by the player who played the card, if still in trick at resolution
+    if(!tc.replaced && !activeCard.isJoker){
+      const ri=RANK_INFO[activeCard.rank];
+      if(ri && ri.starVP>0){
+        const cardKey=activeCard.id;
+        if(!G.starScoredIds.has(cardKey)){
+          G.cumVP[scorer.id]+=ri.starVP;
+          G.starScoredIds.add(cardKey);
+          addLog(`${scorer.name} scores +${ri.starVP}★ (${ri.name} of ${activeCard.suit})`,'good');
+        }
+      }
     }
   });
-  if (fx.doubleStars) starDelta *= 2;
-  winP.handStar += starDelta;
-  winP.handArrow += arrowDelta;
-  winP.handSkull += skullDelta;
-
-  // Major Arcana bonuses — applied immediately, ungated by bid/team rules (per BenMü precedent)
-  if (fx.worldActive) {
-    const suits = new Set(plays.filter(pl => pl.card.type === 'suit').map(pl => pl.card.suit));
-    const bonus = suits.size * 6;
-    if (bonus > 0) { winP.vp += bonus; addLog(winP.name + ' gets +' + bonus + '▲ from The World.'); }
+  addLog(`${winPlayer.name} wins Trick ${G.trickNum}!`,'imp');
+  // Check if hand is over — all players out of cards
+  // Note: cards returned to BT during this trick are still in BT, check after cleanup
+  const allOut=G.players.every(p=>p.hand.length===0&&p.bt.length===0);
+  if(allOut){
+    endHand(); return;
   }
-  if (fx.suitBonus) {
-    const present = plays.some(pl => pl.card.type === 'suit' && pl.card.suit === fx.suitBonus.suit);
-    if (present) { winP.vp += fx.suitBonus.vp; addLog(winP.name + ' gets +' + fx.suitBonus.vp + '▲ from The Magician.'); }
+  // Also end if no player has any playable cards left
+  const anyCards=G.players.some(p=>p.hand.length>0||p.bt.length>0);
+  if(!anyCards){
+    endHand(); return;
   }
-  if (fx.rankBonus) {
-    const count = plays.filter(pl => pl.card.type === 'suit' && pl.card.rank === fx.rankBonus.rank).length;
-    if (count > 0) {
-      const bonus = count * fx.rankBonus.vp;
-      winP.vp += bonus;
-      addLog(winP.name + ' gets +' + bonus + '▲ from The Sage.');
-    }
-  }
-
-  addLog(winP.name + ' wins the trick.');
-  render(); // keep the completed trick visible (with winning highlight) briefly before clearing
-
-  setTimeout(() => {
-    G.currentTrick = [];
-    G.ledSuit = null;
-    G.wizardLedThisTrick = false;
-    G.trickNum++;
-    // The Hanged Man overrides normal lead succession — its activator leads next.
-    G.leadPlayer = (fx.hangedSeat !== undefined) ? fx.hangedSeat : winner;
-    G.players.forEach(p => { p.maActivatedThisTrick = false; });
-
-    if (G.players[0].hand.length === 0 && G.players.every(p => p.hand.length === 0)) {
-      scoreHand();
-    } else {
-      render();
-      maybeAITurn();
-    }
-  }, 3000);
+  // Next trick
+  G.trickNum++;
+  G.currentTrick=[];
+  G.round=1;
+  G.round2Passed=[];
+  G.round2Played=[];
+  G.tdPlayedInTrick=false;
+  G.tcPlayedTotal=0;
+  G.trickLeader=winner;
+  G.currentPlayerIdx=winner;
+  _selectedCardId=null; _selectedCardSource=null; G.selectedCard=null;
+  nextHotSeatOrRender();
 }
 
-function isHigher(cardA, refCard) {
-  const fx = G.maEffects[G.trickNum] || {};
-  const rankOf = c => (fx.tower && c.type === 'suit' && [12, 13, 14].includes(c.rank)) ? c.rank - 7 : c.rank;
-  const rankA = rankOf(cardA), rankR = rankOf(refCard);
-  // both non-jester suit or wizard cards (wizard case already handled above, so these are suit cards)
-  const aTrump = G.trumpSuit && cardA.suit === G.trumpSuit;
-  const rTrump = G.trumpSuit && refCard.suit === G.trumpSuit;
-  if (aTrump && !rTrump) return true;
-  if (!aTrump && rTrump) return false;
-  if (aTrump && rTrump) return rankA > rankR;
-  // neither trump: only counts if following the led suit
-  if (cardA.suit === G.ledSuit && refCard.suit !== G.ledSuit) return true;
-  if (cardA.suit !== G.ledSuit && refCard.suit === G.ledSuit) return false;
-  if (cardA.suit === G.ledSuit && refCard.suit === G.ledSuit) return rankA > rankR;
+function determineTrickWinner() {
+  // Get final state of each player's card in the trick
+  const entries=G.currentTrick.map(tc=>({
+    playerIdx:tc.playerIdx,
+    card: tc.replacedBy||tc.card,
+    origReplaced: tc.replaced,
+  }));
+
+  // Count TCs and TDs
+  const tcs=entries.filter(e=>e.card.isJoker&&e.card.jokerType==='TC');
+  const tds=entries.filter(e=>e.card.isJoker&&e.card.jokerType==='TD');
+
+  // Check if any TC is the "last unplayed TC in game"
+  // Last TC: no TCs remain in any BT across all players
+  const tcInBTs=G.players.reduce((a,p)=>a+p.bt.filter(c=>c.isJoker&&c.jokerType==='TC').length,0);
+  const tcInHands=G.players.reduce((a,p)=>a+p.hand.filter(c=>c.isJoker&&c.jokerType==='TC').length,0);
+  const tcRemaining=tcInBTs+tcInHands;
+
+  if(tcs.length>0 && tcRemaining===0){
+    // Last TC in game wins
+    const lastTC=tcs[tcs.length-1];
+    return lastTC.playerIdx;
+  }
+  // TD wins (first TD)
+  if(tds.length>0){
+    return tds[0].playerIdx;
+  }
+  // Latest TC wins
+  if(tcs.length>0){
+    return tcs[tcs.length-1].playerIdx;
+  }
+  // Non-joker resolution
+  const ledSuit=entries[0].card.isJoker?null:entries[0].card.suit;
+  // Trump cards
+  if(G.trumpSuit){
+    const trumpCards=entries.filter(e=>!e.card.isJoker&&e.card.suit===G.trumpSuit);
+    if(trumpCards.length>0){
+      return trumpCards.reduce((best,e)=>e.card.rank>best.card.rank?e:best).playerIdx;
+    }
+  }
+  // Led suit
+  if(ledSuit){
+    const ledCards=entries.filter(e=>!e.card.isJoker&&e.card.suit===ledSuit);
+    if(ledCards.length>0){
+      return ledCards.reduce((best,e)=>e.card.rank>best.card.rank?e:best).playerIdx;
+    }
+  }
+  return entries[0].playerIdx;
+}
+
+// ══════════════════════════════════════════════════════════
+//  REVEAL EFFECTS
+// ══════════════════════════════════════════════════════════
+function triggerReveal(suit, playerIdx) {
+  const effectIdx=G.reveals.length;
+  if(effectIdx>=6) return;
+  const effect=EFFECTS[effectIdx];
+  G.reveals.push({suit,effect,playerIdx});
+  G.triggeredSuits.add(suit);
+  addLog(`REVEAL ${effectIdx+1}: ${suit} → ${effect}!`,'reveal');
+  if(effect==='Trump') G.trumpSuit=suit;
+  if(effect==='Plus') G.plusSuit=suit;
+  if(effect==='Minus') G.minusSuit=suit;
+  if(effect==='Lead') G.leadNextHandPlayer=playerIdx;
+  if(effect==='Chooser') G.chooserPlayer=playerIdx;
+  if(effect==='Jokers') G.jokerBonusPlayer=playerIdx;
+  // Update reveal track immediately
+  const rsEl=document.getElementById(`rs${effectIdx}`);
+  if(rsEl){
+    rsEl.innerHTML='';
+    rsEl.className=`rs-suit filled-${suit}`;
+    const ri=RANK_INFO[G.pivotRank];
+    const rankSpan=document.createElement('span');
+    rankSpan.style.cssText='font-weight:800;font-size:0.72rem;';
+    rankSpan.textContent=ri ? ri.display : '?';
+    const suitSpan=document.createElement('span');
+    suitSpan.style.cssText='font-size:0.8rem;';
+    suitSpan.textContent=SUIT_ICONS[suit]||'';
+    rsEl.append(rankSpan,suitSpan);
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+//  END OF HAND SCORING
+// ══════════════════════════════════════════════════════════
+function endHand() {
+  G.phase='score';
+  const scoreData=computeScores();
+  // Apply to cumulative
+  scoreData.playerBreakdowns.forEach((pb,i)=>{
+    G.cumVP[i]+=pb.total;
+  });
+  // Set up next hand
+  G.nextHandLeader=G.leadNextHandPlayer;
+  renderScoreScreen(scoreData);
+  showScreen('score-screen');
+}
+
+function computeScores() {
+  const breakdowns=G.players.map(p=>({
+    name:p.name,team:p.team,isLead:p.isLead,
+    arrow:0,skull:0,plus:0,minus:0,
+    total:0,
+  }));
+
+  // ── ARROW VP: pool by team, every member scores the full cumulative total ──
+  ['A','B'].forEach(team=>{
+    const members=G.players.filter(p=>p.team===team);
+    if(members.length===0) return;
+    let arrowTotal=0;
+    members.forEach(p=>{
+      // Captured cards
+      p.capturedCards.forEach(c=>{
+        if(c.isJoker){
+          if(c.jokerType==='TD') arrowTotal+=5;
+          else arrowTotal+=5; // TC also contributes +5↑ to team Arrow pool
+        } else if(RANK_INFO[c.rank]){
+          const ri=RANK_INFO[c.rank];
+          if(ri.arrowVP>0) arrowTotal+=ri.arrowVP;
+        }
+      });
+      // BT cards (should be empty at end of hand, safety check)
+      p.bt.forEach(c=>{
+        if(c.isJoker){
+          if(c.jokerType==='TD') arrowTotal+=5;
+          else arrowTotal+=5;
+        } else if(RANK_INFO[c.rank]){
+          if(RANK_INFO[c.rank].arrowVP>0) arrowTotal+=RANK_INFO[c.rank].arrowVP;
+        }
+      });
+    });
+    // Every team member scores the full Arrow total (no splitting)
+    members.forEach(p=>{ breakdowns[p.id].arrow=arrowTotal; });
+  });
+
+  // ── SKULL VP: individual only — each player penalised by their own captured Skulls ──
+  G.players.forEach(p=>{
+    let skullTotal=0;
+    p.capturedCards.forEach(c=>{
+      if(c.isJoker){
+        if(c.jokerType==='TC') skullTotal+=5; // TC: -5☠ to holder
+      } else if(RANK_INFO[c.rank]){
+        const ri=RANK_INFO[c.rank];
+        if(ri.skullVP<0) skullTotal+=Math.abs(ri.skullVP);
+      }
+    });
+    // BT safety check
+    p.bt.forEach(c=>{
+      if(c.isJoker&&c.jokerType==='TC') skullTotal+=5;
+      else if(!c.isJoker&&RANK_INFO[c.rank]&&RANK_INFO[c.rank].skullVP<0)
+        skullTotal+=Math.abs(RANK_INFO[c.rank].skullVP);
+    });
+    breakdowns[p.id].skull=-skullTotal;
+  });
+
+  // Plus suit: every player scores +5 per captured Plus-suit card (individual, no comparison)
+  if(G.plusSuit){
+    G.players.forEach((p,i)=>{
+      const cnt=p.capturedCards.filter(c=>!c.isJoker&&c.suit===G.plusSuit).length;
+      breakdowns[i].plus=cnt*5;
+    });
+  }
+  // Minus suit: every player scores -5 per captured Minus-suit card (individual, no comparison)
+  if(G.minusSuit){
+    G.players.forEach((p,i)=>{
+      const cnt=p.capturedCards.filter(c=>!c.isJoker&&c.suit===G.minusSuit).length;
+      breakdowns[i].minus=-(cnt*5);
+    });
+  }
+  // Total
+  breakdowns.forEach(b=>{ b.total=b.arrow+b.skull+b.plus+b.minus; });
+  return {playerBreakdowns:breakdowns};
+}
+
+function renderScoreScreen(data) {
+  const el=document.getElementById('score-content');
+  el.innerHTML='';
+  document.getElementById('score-title').textContent='END OF HAND';
+  const nextBtn=document.getElementById('btn-next-hand');
+  if(nextBtn) nextBtn.style.display='';
+  // Hand progress indicator
+  const prog=document.createElement('div');
+  prog.style.cssText='font-family:Cinzel,serif;font-size:0.55rem;color:var(--text3);letter-spacing:2px;margin-bottom:8px;';
+  prog.textContent=`HAND ${G.handNum} OF ${G.totalHands}`;
+  el.appendChild(prog);
+
+  // Reveal summary
+  const rvTitle=document.createElement('div'); rvTitle.className='score-section-title';
+  rvTitle.textContent='SUIT ROLES THIS HAND';
+  el.appendChild(rvTitle);
+  G.reveals.forEach(rv=>{
+    const row=document.createElement('div');
+    row.style.cssText='display:flex;gap:8px;align-items:center;padding:4px 0;font-size:0.82rem;';
+    row.innerHTML=`<span style="font-family:Cinzel,serif;font-size:0.55rem;color:var(--text3);min-width:60px;">${rv.effect}</span>
+      <span style="color:var(--text2);">${SUIT_ICONS[rv.suit]} ${rv.suit}</span>`;
+    el.appendChild(row);
+  });
+
+  // Score table
+  const stTitle=document.createElement('div'); stTitle.className='score-section-title';
+  stTitle.textContent='HAND SCORES';
+  el.appendChild(stTitle);
+  const table=document.createElement('table'); table.className='score-table';
+  table.innerHTML=`<thead><tr>
+    <th>Player</th><th>Team</th><th>▲ Arrow</th><th>☠ Skull</th><th>+ Suit</th><th>− Suit</th><th>Hand</th><th>Total</th>
+  </tr></thead>`;
+  const tbody=document.createElement('tbody');
+  data.playerBreakdowns.forEach((b,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>${b.name}</td>
+      <td>${b.team||'?'}</td>
+      <td class="${b.arrow>0?'score-pos':''}">+${b.arrow}</td>
+      <td class="${b.skull<0?'score-neg':''}">  ${b.skull}</td>
+      <td class="${b.plus>0?'score-pos':''}">  ${b.plus>0?'+'+b.plus:b.plus}</td>
+      <td class="${b.minus<0?'score-neg':''}">  ${b.minus}</td>
+      <td class="${b.total>0?'score-pos':b.total<0?'score-neg':''}">  ${b.total>0?'+'+b.total:b.total}</td>
+      <td class="score-total">  ${G.cumVP[i]}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  el.appendChild(table);
+
+  // Chooser
+  if(G.chooserPlayer!==null){
+    const ch=document.createElement('div');
+    ch.style.cssText='margin-top:12px;padding:10px;background:var(--gold-lt);border:1px solid var(--gold2);border-radius:8px;font-size:0.82rem;color:var(--gold);';
+    ch.textContent=`${G.players[G.chooserPlayer].name} chooses the Pivot Rank for Hand ${G.handNum+1}.`;
+    el.appendChild(ch);
+  }
+}
+
+function nextHand() {
+  if(G.chooserPlayer!==null){
+    const chooser=G.players[G.chooserPlayer];
+    if(chooser.isAI){
+      // AI picks rank most frequent in its own hand
+      const eligible=PIVOT_ELIGIBLE[G.numPlayers];
+      const allCards=[...chooser.hand,...chooser.bt];
+      let best=eligible[0], bestCount=0;
+      eligible.forEach(r=>{
+        const cnt=allCards.filter(c=>!c.isJoker&&c.rank===r).length;
+        if(cnt>bestCount){bestCount=cnt;best=r;}
+      });
+      G.pivotRank=best;
+      startNextHand();
+    } else {
+      showPivotChooserModal();
+    }
+  } else {
+    startNextHand();
+  }
+}
+
+function showPivotChooserModal() {
+  const chooser=G.players[G.chooserPlayer];
+  const eligible=PIVOT_ELIGIBLE[G.numPlayers];
+  showModal(
+    `${chooser.name}: Choose Pivot Rank`,
+    `You triggered the 5th reveal. Choose the Pivot Rank for Hand ${G.handNum+1}.`,
+    eligible.map(r=>({
+      label:`${RANK_INFO[r].name} (${RANK_INFO[r].cat})`,
+      action:()=>{G.pivotRank=r;hideModal();startNextHand();}
+    })),
+    []
+  );
+}
+
+function startNextHand() {
+  if(G.handNum >= G.totalHands){
+    showGameOver();
+    return;
+  }
+  G.handNum++;
+  G.jokerBonusPlayer=G.jokerBonusPlayer;
+  G.nextHandLeader=G.leadNextHandPlayer;
+  G.chooserPlayer=null;
+  dealHand();
+  setupBiddingTableaux();
+  showPivotDeclaration();
+}
+
+function showGameOver() {
+  const el=document.getElementById('score-content');
+  el.innerHTML='';
+  // Final standings
+  const sorted=[...G.players].sort((a,b)=>G.cumVP[b.id]-G.cumVP[a.id]);
+  const winner=sorted[0];
+  const title=document.getElementById('score-title');
+  title.textContent='GAME OVER';
+  const banner=document.createElement('div');
+  banner.style.cssText='text-align:center;padding:16px 0 8px;';
+  banner.innerHTML=`<div style="font-size:2rem;margin-bottom:4px;">🏆</div>
+    <div style="font-family:Cinzel,serif;font-size:1.1rem;font-weight:900;color:var(--purple);">${winner.name}</div>
+    <div style="font-family:Cinzel,serif;font-size:0.6rem;color:var(--text3);letter-spacing:2px;margin-top:2px;">WINS WITH ${G.cumVP[winner.id]} VP</div>`;
+  el.appendChild(banner);
+  // Final standings table
+  const stTitle=document.createElement('div'); stTitle.className='score-section-title';
+  stTitle.textContent='FINAL STANDINGS';
+  el.appendChild(stTitle);
+  const table=document.createElement('table'); table.className='score-table';
+  table.innerHTML=`<thead><tr><th>#</th><th>Player</th><th>Team</th><th>Total VP</th></tr></thead>`;
+  const tbody=document.createElement('tbody');
+  sorted.forEach((p,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td style="font-weight:700;">${i===0?'🏆':i+1}</td>
+      <td>${p.name}${p.isAI?' 🤖':''}</td>
+      <td>${p.team||'?'}</td>
+      <td class="${G.cumVP[p.id]>0?'score-pos':G.cumVP[p.id]<0?'score-neg':''}" style="font-weight:700;">${G.cumVP[p.id]}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  el.appendChild(table);
+  // Hide next hand button, show only new game
+  const nextBtn=document.getElementById('btn-next-hand');
+  if(nextBtn) nextBtn.style.display='none';
+  showScreen('score-screen');
+}
+
+// ══════════════════════════════════════════════════════════
+//  HOTSEAT FLOW + AI DISPATCH
+// ══════════════════════════════════════════════════════════
+function nextHotSeatOrRender() {
+  const cp = G.players[G.currentPlayerIdx];
+  const humanCount = G.players.filter(p=>!p.isAI).length;
+  if (cp.isAI) {
+    renderGameScreen();
+    showScreen('game-screen');
+    setTimeout(()=>aiTakeTurn(), 700);
+  } else if (humanCount <= 1) {
+    // Only one human — no need to hide cards, go straight to game
+    G.currentViewerIdx = G.currentPlayerIdx;
+    renderGameScreen();
+    showScreen('game-screen');
+  } else {
+    // Multiple humans sharing device — show hotseat handoff
+    G.currentViewerIdx = G.currentPlayerIdx;
+    showHotseat();
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+//  AI ENGINE
+// ══════════════════════════════════════════════════════════
+function aiTakeTurn() {
+  const cp = G.players[G.currentPlayerIdx];
+  if (G.round === 1) {
+    aiPlayR1(cp);
+  } else {
+    aiPlayR2(cp);
+  }
+}
+
+function aiPickCard(player) {
+  // Get legal cards (all hand + BT cards, filtered by suit-following)
+  const allCards = [...player.hand, ...player.bt];
+  let legal = allCards;
+  if (G.currentTrick.length > 0) {
+    const ledCard = G.currentTrick[0].card;
+    const ledSuit = ledCard.isJoker ? null : ledCard.suit;
+    if (ledSuit) {
+      const hasSuit = allCards.some(c => !c.isJoker && c.suit === ledSuit);
+      if (hasSuit) legal = allCards.filter(c => !c.isJoker && c.suit === ledSuit);
+    }
+  }
+  return legal;
+}
+
+function aiCanWinTrick(card) {
+  // Check if playing this card would currently win the trick
+  const entries = [...G.currentTrick.map(tc=>({card:tc.replacedBy||tc.card})), {card}];
+  const tds = entries.filter(e=>e.card.isJoker&&e.card.jokerType==='TD');
+  const tcs = entries.filter(e=>e.card.isJoker&&e.card.jokerType==='TC');
+  if (card.isJoker && card.jokerType==='TD') return true;
+  if (tds.length > 0) return false; // someone played TD already
+  if (card.isJoker && card.jokerType==='TC') {
+    // wins if it's the latest TC and no TD
+    return true; // simplification — last TC wins
+  }
+  // Non-joker: check if it's highest in its suit category
+  const ledSuit = G.currentTrick.length > 0 && !G.currentTrick[0].card.isJoker
+    ? G.currentTrick[0].card.suit : null;
+  if (G.trumpSuit && card.suit === G.trumpSuit) {
+    const trumpsInTrick = entries.filter(e=>!e.card.isJoker&&e.card.suit===G.trumpSuit);
+    const maxTrump = Math.max(...trumpsInTrick.map(e=>e.card.rank));
+    return card.rank >= maxTrump;
+  }
+  if (ledSuit && card.suit === ledSuit) {
+    const ledCards = entries.filter(e=>!e.card.isJoker&&e.card.suit===ledSuit);
+    const maxLed = Math.max(...ledCards.map(e=>e.card.rank));
+    return card.rank >= maxLed;
+  }
   return false;
 }
 
-function maybeAITurn() {
-  if (G.phase !== 'playing') return;
-  const turnIdx = (G.leadPlayer + G.currentTrick.length) % G.numPlayers;
-  if (G.players[turnIdx].isHuman) return;
-  const p = G.players[turnIdx];
-  setTimeout(() => {
-    if (G.useMajors && !p.maActivatedThisTrick && p.arcana.length && Math.random() < 0.25) {
-      const card = p.arcana[Math.floor(Math.random() * p.arcana.length)];
-      activateMA(turnIdx, card.id);
-      if (card.maId === 'Hanged') return; // The Hanged Man consumes the turn (auto-skip)
-    }
-    const options = legalPlays(turnIdx);
-    if (!options.length) return;
-    const choice = aiChooseCard(turnIdx, options);
-    playCard(turnIdx, choice.id);
-  }, 600);
-}
-
-function aiChooseCard(playerIdx, options) {
-  const p = G.players[playerIdx];
-  const needsMore = p.tricksWon < (p.bid || 0);
-  const sorted = options.slice().sort((a, b) => cardPower(a) - cardPower(b));
-
-  if (!needsMore) return sorted[0]; // ducking behavior unchanged across all difficulties
-
-  if (G.difficulty === 'easy') {
-    return sorted[sorted.length - 1]; // original heuristic: always the highest legal card
-  }
-
-  const highest = sorted[sorted.length - 1];
-  const wouldWin = (G.difficulty === 'hard')
-    ? isTrueTopperHard(highest, playerIdx)
-    : computeTrickWinner(G.currentTrick.concat([{ player: playerIdx, card: highest }])) === playerIdx;
-
-  if (wouldWin) return highest;
-  // Highest card wouldn't (provably) win — hold it back. Play a middle-ranked card
-  // instead of the lowest, since a very low card can still unexpectedly win a weak
-  // trick; fall back to the lowest only if there's no real middle option.
-  if (sorted.length >= 3) {
-    return sorted[Math.floor((sorted.length - 1) / 2)];
-  }
-  return sorted[0];
-}
-
-// Hard difficulty: "cheats" — sees every other player's actual hand, so it can determine
-// with certainty whether a candidate card is a true topper (nothing anyone still holding
-// cards for this trick could possibly beat it), rather than only checking what's already
-// been played so far.
-function isTrueTopperHard(candidate, playerIdx) {
-  const wizardAlreadyPlayed = G.currentTrick.some(pl => pl.card.type === 'wizard');
-  if (wizardAlreadyPlayed) return false; // the first Wizard already locked in the winner, and it's not us
-  if (candidate.type === 'wizard') return true; // first Wizard played always wins, guaranteed
-  if (candidate.type === 'jester') return false; // never a guaranteed winner
-
-  // What suit will be "led" once this candidate is played?
-  let effectiveLedSuit = G.ledSuit;
-  if (effectiveLedSuit === null && !G.wizardLedThisTrick) {
-    effectiveLedSuit = candidate.suit;
-  }
-
-  const playedSoFar = new Set(G.currentTrick.map(pl => pl.player));
-  const remainingOpponents = G.players.filter(pl => pl.id !== playerIdx && !playedSoFar.has(pl.id));
-
-  const savedLedSuit = G.ledSuit;
-  G.ledSuit = effectiveLedSuit;
-  let isTopper = true;
-  for (const opp of remainingOpponents) {
-    const oppLegal = legalPlays(opp.id);
-    for (const oc of oppLegal) {
-      if (oc.type === 'wizard') { isTopper = false; break; } // always legal, always beats a suit card
-      if (oc.type === 'jester') continue;
-      if (isHigher(oc, candidate)) { isTopper = false; break; }
-    }
-    if (!isTopper) break;
-  }
-  G.ledSuit = savedLedSuit;
-  return isTopper;
-}
-
-function cardPower(c) {
-  if (c.type === 'wizard') return 1000;
-  if (c.type === 'jester') return -1000;
-  let p = c.rank;
-  if (G.trumpSuit && c.suit === G.trumpSuit) p += 100;
-  return p;
-}
-
-// ---------- Scoring ----------
-function scoreHand() {
-  const vpBefore = {};
-  G.players.forEach(p => { vpBefore[p.id] = p.vp; });
-
-  G.players.forEach(p => {
-    const diff = Math.abs(p.tricksWon - p.bid);
-    const madeBid = diff === 0;
-    const bidVP = madeBid ? 50 : -5 * diff;
-    p.vp += bidVP;
-
-    // Star / Skull score individually regardless of bid outcome or team status (assumption — flagged to Ben)
-    p.vp += p.handStar;
-    p.vp += p.handSkull;
-    p.star += p.handStar;
-    p.skull += p.handSkull;
-
-    p.madeBidThisHand = madeBid;
-    p.arrowVoided = 0;
-
-    // Stash breakdown for the hand-summary display
-    p.lastHand = { bidVP, starVP: p.handStar, skullVP: p.handSkull, arrowVP: 0, vpBefore: vpBefore[p.id] };
-  });
-
-  // Arrow VP is team-gated: if AT LEAST ONE teammate made their bid, the whole team's
-  // combined Arrow VP (from every member, made-bid or not) pools and every teammate
-  // gets the full pool. If nobody on the team made their bid, the team's Arrow VP is
-  // voided entirely. Solo players never score Arrow VP regardless.
-  const teamIds = new Set(G.players.filter(p => p.team !== 'solo').map(p => p.team));
-  teamIds.forEach(teamId => {
-    const members = G.players.filter(p => p.team === teamId);
-    const qualifies = members.some(p => p.madeBidThisHand);
-    const pool = qualifies ? members.reduce((s, p) => s + p.handArrow, 0) : 0;
-    if (qualifies && pool > 0) {
-      members.forEach(p => { p.vp += pool; p.arrow += pool; p.lastHand.arrowVP = pool; });
-    } else if (!qualifies) {
-      members.forEach(p => { p.arrowVoided = p.handArrow; });
-    }
-  });
-  G.players.filter(p => p.team === 'solo').forEach(p => { p.arrowVoided = p.handArrow; });
-
-  G.players.forEach(p => { p.lastHand.total = p.vp - p.lastHand.vpBefore; });
-
-  G.phase = 'handSummary';
-  addLog('Hand scored.');
-  render();
-}
-
-// ---------- Rendering ----------
-function render() {
-  const app = document.getElementById('app');
-  if (!G || G.phase === 'setup') { app.innerHTML = renderSetup(); return; }
-  if (G.phase === 'gameEnd') { app.innerHTML = renderGameEnd(); return; }
-  app.innerHTML = renderGame();
-  if (G.phase === 'handSummary') renderHandSummaryModal();
-}
-
-function renderSetup() {
-  return `
-  <div class="panel">
-    <h1 class="title">Ben Wizard</h1>
-    <div class="subtitle">Bid the tricks. Master the trump. Wizards rule, Jesters fall.</div>
-    <label for="numPlayers">Number of Players (3–10)</label>
-    <select id="numPlayers">
-      ${[3,4,5,6,7,8,9,10].map(n => `<option value="${n}">${n} players</option>`).join('')}
-    </select>
-    <label for="difficulty">AI Difficulty</label>
-    <select id="difficulty">
-      <option value="easy">Easy</option>
-      <option value="medium" selected>Medium</option>
-      <option value="hard">Hard</option>
-    </select>
-    <div class="toggle-row">
-      <input type="checkbox" id="useMajors">
-      <label style="margin:0;" for="useMajors">Enable Major Arcana</label>
-    </div>
-    <div class="btn-row">
-      <button onclick="startGame()">Start Game</button>
-    </div>
-  </div>`;
-}
-
-function startGame() {
-  const n = parseInt(document.getElementById('numPlayers').value, 10);
-  const useMajors = document.getElementById('useMajors').checked;
-  const difficulty = document.getElementById('difficulty').value;
-  newGame(n, useMajors, difficulty);
-  render();
-  advanceGameFlow();
-}
-
-// Kicks off whatever the current phase needs (AI trump pick, AI bidding chain, AI play)
-function advanceGameFlow() {
-  if (G.phase === 'trumpChoice' && G.dealerIndex !== 0) {
-    setTimeout(() => {
-      const suit = aiChooseTrump(G.dealerIndex);
-      chooseTrump(suit);
-    }, 500);
-  } else if (G.phase === 'bidding') {
-    maybeAdvanceBidding();
-  } else if (G.phase === 'playing') {
-    maybeAITurn();
-  }
-}
-
-function aiChooseTrump(dealerIdx) {
-  const p = G.players[dealerIdx];
-  const counts = {};
-  p.hand.forEach(c => { if (c.type === 'suit') counts[c.suit] = (counts[c.suit] || 0) + 1; });
-  const cfg = PLAYER_CONFIG[G.numPlayers];
-  const suits = SUIT_DEFS.slice(0, cfg.suits).map(s => s.name);
-  let best = suits[0], bestCount = -1;
-  suits.forEach(s => { if ((counts[s] || 0) > bestCount) { bestCount = counts[s] || 0; best = s; } });
-  return best;
-}
-
-function renderGame() {
-  const human = G.players[0];
-  const opponents = G.players.filter(p => !p.isHuman);
-  const turnIdx = G.phase === 'playing' ? (G.leadPlayer + G.currentTrick.length) % G.numPlayers : -1;
-
-  let html = `<div class="panel">
-    <div class="hud">
-      <div>Round ${G.roundNum} · ${G.handSize} cards · Trick ${G.trickNum + 1}/${G.handSize}</div>
-      <div>${G.trumpSuit ? 'Trump: ' + suitIcon(G.trumpSuit) + ' ' + G.trumpSuit : 'No Trump'}</div>
-    </div>
-    <div class="table">
-      <div class="opponents-row">`;
-
-  opponents.forEach(p => {
-    html += `<div class="opp-badge ${turnIdx === p.id ? 'active' : ''} ${G.dealerIndex === p.id ? 'dealer' : ''}">
-      <div class="opp-name" style="color:${teamColor(p.team)};">${p.name} ${p.team === 'solo' ? '⭐' : ''}</div>
-      <div class="opp-info" style="color:${teamColor(p.team)}; font-weight:700;">${teamLabel(p.team)}</div>
-      <div class="opp-info">Bid: ${p.bid === null ? '-' : p.bid} · Won: ${p.tricksWon} · Cards: ${p.hand ? p.hand.length : 0}</div>
-      <div class="opp-info">VP: ${Math.round(p.vp)}${G.useMajors ? ' · ✦' + p.arcana.length : ''}</div>
-    </div>`;
-  });
-
-  html += `</div><div class="trick-area">`;
-  const currentWinner = G.currentTrick.length ? computeTrickWinner(G.currentTrick) : null;
-  // The player who set the led suit — first card played that's a real suited card
-  // (a Jester never sets the suit; if ALL cards played are Jesters, no one does).
-  const leadSuitPlay = G.currentTrick.find(pl => pl.card.type === 'suit');
-  const leadSuitPlayerId = leadSuitPlay ? leadSuitPlay.player : null;
-  G.currentTrick.forEach(pl => {
-    const isWinning = pl.player === currentWinner;
-    const isLeadSuit = pl.player === leadSuitPlayerId;
-    html += `<div class="played-card-slot ${isWinning ? 'winning' : ''}">
-      <div class="who" style="color:${teamColor(G.players[pl.player].team)};">${isLeadSuit ? '<span class="lead-suit-badge">🚩</span> ' : ''}${G.players[pl.player].name}${isWinning ? ' <span class="winning-badge">Winning</span>' : ''}</div>
-      ${renderCardHTML(pl.card, false)}
-    </div>`;
-  });
-  html += `</div></div>`;
-
-  html += `<div class="hud" style="margin-top:12px;">
-    <div><span style="color:${teamColor(human.team)}; font-weight:700;">You</span> ${G.dealerIndex === 0 ? '(Dealer)' : ''} ${human.team === 'solo' ? '⭐ <span style="color:' + teamColor(human.team) + '; font-weight:700;">Solo</span>' : '· <span style="color:' + teamColor(human.team) + '; font-weight:700;">' + teamLabel(human.team) + '</span>'}</div>
-    <div>Bid: ${human.bid === null ? '-' : human.bid} · Won: ${human.tricksWon} · VP: ${Math.round(human.vp)}</div>
-  </div>`;
-
-  if (G.useMajors && human.arcana.length) {
-    html += `<div class="hud" style="margin-top:6px; font-size:13px;">
-      <div>✦ Your Arcana Tableau: ${human.arcana.map(c => c.label).join(', ')}</div>
-    </div>`;
-  }
-
-  if (G.phase === 'trumpChoice' && G.dealerIndex === 0) {
-    html += renderInlineTrumpBar();
-  }
-
-  if (G.phase === 'bidding' && G.bidOrder[G.bidTurnPtr] === 0) {
-    html += renderInlineBidBar();
-  }
-
-  if (G.phase === 'maDraft' && G.maDraftOrder[G.maDraftIdx] === 0) {
-    html += renderInlineMADraftBar();
-  }
-
-  if (G.phase === 'playing' && G.useMajors && turnIdx === 0 && G.pendingSage && G.pendingSage.seat === 0) {
-    html += renderInlineSageBar();
-  } else if (G.phase === 'playing' && G.useMajors && turnIdx === 0 && !human.maActivatedThisTrick && human.arcana.length) {
-    html += renderInlineArcanaBar();
-  }
-
-  const legal = (G.phase === 'playing' && turnIdx === 0) ? legalPlays(0).map(c => c.id) : [];
-  html += `<div class="hand-row">`;
-  sortedHandFor(human.hand).forEach(c => {
-    const isLegal = G.phase === 'playing' && turnIdx === 0 && legal.includes(c.id);
-    html += renderCardHTML(c, true, isLegal, turnIdx === 0);
-  });
-  html += `</div>`;
-
-  html += `<div class="log">${G.log.slice(0, 8).map(l => '<div>' + l + '</div>').join('')}</div>`;
-  html += `</div>`;
-  return html;
-}
-
-function teamLabel(t) {
-  if (t === 'solo') return 'Solo';
-  if (t === 'A') return 'Team A';
-  if (t === 'B') return 'Team B';
-  if (t && t.indexOf('pair') === 0) return 'Team ' + t.replace('pair', '');
-  return t || '';
-}
-
-const PAIR_TEAM_PALETTE = ['#1a7a3a', '#7a3aa0', '#c07000', '#008a8a', '#a03060', '#5050b0'];
-function teamColor(t) {
-  if (t === 'solo') return '#a07800';
-  if (t === 'A') return '#1a5aaa';
-  if (t === 'B') return '#c81c1c';
-  if (t && t.indexOf('pair') === 0) {
-    const idx = parseInt(t.replace('pair', ''), 10) - 1;
-    return PAIR_TEAM_PALETTE[idx % PAIR_TEAM_PALETTE.length];
-  }
-  return 'inherit';
-}
-
-function suitIcon(name) {
-  const s = SUIT_DEFS.find(s => s.name === name);
-  return s ? s.icon : '';
-}
-
-function vpSymbolHTML(c) {
-  if (c.type === 'skip') return `<span style="opacity:0.3;">–</span>`;
-  if (c.type === 'wizard') return `<span class="vp-arrow">▲</span>`;
-  if (c.type === 'jester') return `<span class="vp-star">★</span><span class="vp-skull">☠</span>`;
-  if (c.cat === 'StarSkull') return `<span class="vp-star">★</span><span class="vp-skull">☠</span>`;
-  if (c.rank === 14) return `<span class="vp-arrow-neg">▼▼</span>`;
-  if (c.cat === 'Star') return c.rank === 1 ? `<span class="vp-star">★★</span>` : `<span class="vp-star">★</span>`;
-  if (c.rank === 5) return `<span class="vp-arrow">▲▲</span>`;
-  if (c.rank === 12) return `<span class="vp-skull">☠☠</span>`;
-  if (c.cat === 'Arrow') return `<span class="vp-arrow">▲</span>`;
-  if (c.cat === 'Skull') return `<span class="vp-skull">☠</span>`;
-  return `<span style="opacity:0.3;">–</span>`;
-}
-
-function renderCardHTML(c, clickable, isLegal, isHumanTurn) {
-  let cls = 'card';
-  let topLabel, midIcon;
-  if (c.type === 'skip') { topLabel = 'Skip'; midIcon = '—'; }
-  else if (c.type === 'wizard') { cls += ' wizard'; topLabel = 'Wiz'; midIcon = '✦'; }
-  else if (c.type === 'jester') { cls += ' jester'; topLabel = 'Jest'; midIcon = '♦'; }
+function opponentCurrentlyWinning() {
+  if (G.currentTrick.length === 0) return false;
+  // Determine current winner
+  const entries = G.currentTrick.map(tc=>({playerIdx:tc.playerIdx, card:tc.replacedBy||tc.card}));
+  const tds = entries.filter(e=>e.card.isJoker&&e.card.jokerType==='TD');
+  const tcs = entries.filter(e=>e.card.isJoker&&e.card.jokerType==='TC');
+  let winnerIdx;
+  if (tds.length > 0) winnerIdx = tds[0].playerIdx;
+  else if (tcs.length > 0) winnerIdx = tcs[tcs.length-1].playerIdx;
   else {
-    topLabel = c.face;
-    midIcon = `<span style="color:${c.suitColor}">${c.suitIcon}</span>`;
-    if (G.trumpSuit && c.suit === G.trumpSuit) cls += ' trump-suit';
+    const ledSuit = !entries[0].card.isJoker ? entries[0].card.suit : null;
+    let best = entries[0];
+    for (const e of entries) {
+      if (e.card.isJoker) continue;
+      if (G.trumpSuit && e.card.suit===G.trumpSuit) {
+        if (!best.card.isJoker&&best.card.suit!==G.trumpSuit) best=e;
+        else if (e.card.rank > best.card.rank) best=e;
+      } else if (ledSuit && e.card.suit===ledSuit && (!best.card.suit||best.card.suit!==G.trumpSuit)) {
+        if (e.card.rank > (best.card.rank||0)) best=e;
+      }
+    }
+    winnerIdx = best.playerIdx;
   }
-  const inner = `<div class="rank">${topLabel}</div><div class="icon">${midIcon}</div><div class="vp-symbol">${vpSymbolHTML(c)}</div>`;
-  const clickAttr = (clickable && isHumanTurn && isLegal) ? `onclick="playCard(0,'${c.id}')"` : '';
-  if (clickable && isHumanTurn && !isLegal) cls += ' disabled';
-  return `<div class="${cls}" ${clickAttr}>${inner}</div>`;
+  const winner = G.players[winnerIdx];
+  return winner.team !== G.players[G.currentPlayerIdx].team;
 }
 
-function renderInlineTrumpBar() {
-  const cfg = PLAYER_CONFIG[G.numPlayers];
-  const suits = SUIT_DEFS.slice(0, cfg.suits);
-  return `<div class="panel" style="padding:12px; margin:10px 0; display:flex; align-items:center; gap:10px; flex-wrap:wrap; border-color:var(--gold);">
-    <strong>You turned up a Wizard — choose Trump:</strong>
-    <div class="bid-choices" style="margin-top:0;">
-      ${suits.map(s => `<button onclick="chooseTrump('${s.name}')">${s.icon} ${s.name}</button>`).join('')}
-    </div>
-  </div>`;
+function trickHasArrowOrPlus() {
+  return G.currentTrick.some(tc => {
+    const c = tc.replacedBy||tc.card;
+    if (c.isJoker) return c.jokerType==='TD';
+    return RANK_INFO[c.rank]&&(RANK_INFO[c.rank].vpType==='arrow'||c.suit===G.plusSuit);
+  });
 }
 
-function renderInlineBidBar() {
-  const max = G.handSize;
-  const restricted = [];
-  for (let b = 0; b <= max; b++) if (isRestrictedBid(0, b)) restricted.push(b);
-  let options = '';
-  for (let b = 0; b <= max; b++) {
-    options += `<option value="${b}" ${restricted.includes(b) ? 'disabled' : ''}>${b}</option>`;
+function aiPlayR1(player) {
+  const legal = aiPickCard(player);
+  let chosen = null;
+  const oppWinning = opponentCurrentlyWinning();
+  const isLeading = G.currentTrick.length === 0;
+
+  // Separate card pools
+  const jokers = legal.filter(c=>c.isJoker);
+  const stars = legal.filter(c=>!c.isJoker && RANK_INFO[c.rank]&&RANK_INFO[c.rank].starVP>0);
+  const arrows = legal.filter(c=>!c.isJoker && RANK_INFO[c.rank]&&RANK_INFO[c.rank].arrowVP>0&&RANK_INFO[c.rank].starVP===0);
+  const skulls = legal.filter(c=>!c.isJoker && RANK_INFO[c.rank]&&RANK_INFO[c.rank].skullVP<0&&RANK_INFO[c.rank].starVP===0);
+  const neutrals = legal.filter(c=>!c.isJoker && RANK_INFO[c.rank]&&RANK_INFO[c.rank].vpType==='none');
+  const trumpCards = legal.filter(c=>!c.isJoker && c.suit===G.trumpSuit);
+  const minusCards = legal.filter(c=>!c.isJoker && c.suit===G.minusSuit);
+  const plusCards = legal.filter(c=>!c.isJoker && c.suit===G.plusSuit);
+
+  const canWin = legal.some(c=>aiCanWinTrick(c));
+
+  if (isLeading) {
+    // Leading: prefer star cards, then plus suit, then safe neutrals, then arrows
+    if (stars.length) chosen = stars[0];
+    else if (plusCards.length) chosen = plusCards[0];
+    else if (neutrals.length) chosen = neutrals[0];
+    else if (arrows.length) chosen = arrows[0];
+    else chosen = legal[0];
+  } else if (oppWinning) {
+    // Opponent winning — try to dump bad cards or win if possible
+    // 1. Try to win with minimal winning card
+    const winCards = legal.filter(c=>aiCanWinTrick(c));
+    if (winCards.length && trickHasArrowOrPlus()) {
+      // Worth winning — use weakest winner
+      winCards.sort((a,b)=>a.rank-b.rank);
+      chosen = winCards[0];
+    } else {
+      // Not worth winning or can't win — dump strategically
+      // Dump skull if it won't make opponent team win the skull majority
+      if (skulls.length) {
+        chosen = skulls[0]; // dump skull onto opponent
+      } else if (minusCards.length) {
+        chosen = minusCards[0]; // dump minus suit cards
+      } else if (neutrals.length) {
+        chosen = neutrals[0];
+      } else if (arrows.length) {
+        // Avoid giving arrows to opponents — pick lowest arrow
+        arrows.sort((a,b)=>a.rank-b.rank);
+        chosen = arrows[0];
+      } else {
+        chosen = legal[legal.length-1]; // last resort
+      }
+    }
+  } else {
+    // Teammate winning or we're leading
+    if (stars.length) chosen = stars[0]; // always good
+    else if (canWin) {
+      // Win with weakest winner
+      const winCards = legal.filter(c=>aiCanWinTrick(c));
+      winCards.sort((a,b)=>a.rank-b.rank);
+      chosen = winCards[0];
+    } else {
+      // Can't win — safe dump
+      if (neutrals.length) chosen = neutrals[0];
+      else if (arrows.length) { arrows.sort((a,b)=>a.rank-b.rank); chosen=arrows[0]; }
+      else chosen = legal[0];
+    }
   }
-  return `<div class="panel" style="padding:12px; margin:10px 0; display:flex; align-items:center; gap:10px; flex-wrap:wrap; border-color:var(--gold);">
-    <strong>Your Bid:</strong>
-    <select id="bidSelect">${options}</select>
-    <button onclick="confirmHumanBid()">Submit Bid</button>
-    ${restricted.length ? `<span style="font-size:12px;color:var(--text-dim);">(Cannot bid ${restricted.join(', ')} — dealer restriction)</span>` : ''}
-  </div>`;
+
+  if (!chosen) chosen = legal[0];
+
+  // Remove from hand or BT
+  const inHand = player.hand.find(c=>c.id===chosen.id);
+  if (inHand) player.hand = player.hand.filter(c=>c.id!==chosen.id);
+  else player.bt = player.bt.filter(c=>c.id!==chosen.id);
+
+  G.currentTrick.push({playerIdx:G.currentPlayerIdx, card:chosen, round:1, replaced:false, replacedBy:null});
+  addLog(`${player.name} plays ${chosen.isJoker?chosen.jokerType:RANK_INFO[chosen.rank].display} of ${chosen.suit}`);
+
+  // Check pivot trigger
+  if (!chosen.isJoker && chosen.rank===G.pivotRank && !G.triggeredSuits.has(chosen.suit)) {
+    triggerReveal(chosen.suit, G.currentPlayerIdx);
+  }
+  if (chosen.isJoker) {
+    if (chosen.jokerType==='TD') G.tdPlayedInTrick=true;
+    else G.tcPlayedTotal++;
+  }
+
+  renderGameScreen();
+  setTimeout(()=>advanceR1(), 600);
 }
 
-function confirmHumanBid() {
-  const sel = document.getElementById('bidSelect');
-  if (!sel) return;
-  const b = parseInt(sel.value, 10);
-  humanBid(b);
+function aiPlayR2(player) {
+  const alreadyActed = G.round2Played.includes(G.currentPlayerIdx) || G.round2Passed.includes(G.currentPlayerIdx);
+  if (alreadyActed) { advanceR2(); return; }
+
+  const oppWinning = opponentCurrentlyWinning();
+  const worthWinning = trickHasArrowOrPlus();
+  const myR1 = G.currentTrick.find(t=>t.playerIdx===G.currentPlayerIdx);
+  const myR1Card = myR1 ? myR1.card : null;
+  const canReplace = myR1Card && !myR1Card.isJoker; // can only replace non-joker
+
+  // TD jokers in BT
+  const tdInBT = player.bt.filter(c=>c.isJoker&&c.jokerType==='TD');
+  const tcInBT = player.bt.filter(c=>c.isJoker&&c.jokerType==='TC');
+
+  let playJoker = null;
+
+  if (canReplace && oppWinning && worthWinning && tdInBT.length > 0) {
+    playJoker = tdInBT[0]; // steal trick with TD
+  } else if (canReplace && oppWinning && tcInBT.length > 0 && G.tcPlayedTotal < 2) {
+    playJoker = tcInBT[0]; // play TC to try to take over
+  }
+
+  if (playJoker) {
+    // Play joker — replace R1 card
+    const returnedCard = myR1Card;
+    player.bt.push(returnedCard);
+    player.bt = player.bt.filter(c=>c.id!==playJoker.id);
+    myR1.replaced=true; myR1.replacedBy=playJoker;
+    if (playJoker.jokerType==='TD') {
+      G.tdPlayedInTrick=true;
+      G.round2Played.push(G.currentPlayerIdx);
+      addLog(`${player.name} plays TD — wins trick!`,'reveal');
+      renderGameScreen();
+      setTimeout(()=>resolveTrick(), 700);
+      return;
+    } else {
+      G.tcPlayedTotal++;
+      G.round2Played.push(G.currentPlayerIdx);
+      addLog(`${player.name} plays TC in Round 2`,'imp');
+      if (G.tcPlayedTotal >= 3) {
+        renderGameScreen();
+        setTimeout(()=>resolveTrick(), 700);
+        return;
+      }
+    }
+  } else {
+    G.round2Passed.push(G.currentPlayerIdx);
+    addLog(`${player.name} passes Round 2`);
+  }
+
+  renderGameScreen();
+  setTimeout(()=>advanceR2(), 500);
 }
 
-function renderInlineMADraftBar() {
-  return `<div class="panel" style="padding:12px; margin:10px 0; border-color:var(--gold);">
-    <strong>✦ Arcana Draft — pick one card:</strong>
-    <div class="bid-choices" style="margin-top:10px;">
-      ${G.maAuctionTable.map(c => `<button onclick="maDraftPick(0,'${c.id}')" title="${c.desc}">${c.label}</button>`).join('')}
-    </div>
-  </div>`;
+// ══════════════════════════════════════════════════════════
+//  AUTO TEAM FORMATION
+// ══════════════════════════════════════════════════════════
+function btStrength(player) {
+  // Returns [tdCount, jokerCount, tcCount, pivotCount] for sorting
+  const bt = player.bt;
+  const td = bt.filter(c=>c.isJoker&&c.jokerType==='TD').length;
+  const tc = bt.filter(c=>c.isJoker&&c.jokerType==='TC').length;
+  const jokers = td + tc;
+  const pivot = bt.filter(c=>!c.isJoker&&c.rank===G.pivotRank).length;
+  return [td, jokers, tc, pivot];
 }
 
-function renderInlineArcanaBar() {
-  const human = G.players[0];
-  return `<div class="panel" style="padding:12px; margin:10px 0; border-color:var(--gold);">
-    <strong>✦ Activate an Arcana card (optional, one per trick):</strong>
-    <div class="bid-choices" style="margin-top:10px;">
-      ${human.arcana.map(c => `<button onclick="humanActivateMA('${c.id}')" title="${c.desc}">${c.label}</button>`).join('')}
-    </div>
-  </div>`;
+function pickBestPartner(candidates) {
+  // Sort candidates by BT strength descending, then random tiebreak
+  return [...candidates].sort((a,b)=>{
+    const sa=btStrength(a), sb=btStrength(b);
+    for(let i=0;i<sa.length;i++){
+      if(sb[i]!==sa[i]) return sb[i]-sa[i];
+    }
+    return Math.random()-0.5;
+  })[0];
 }
 
-function humanActivateMA(cardId) {
-  activateMA(0, cardId);
+function autoFormTeams() {
+  G.players.forEach(p=>{ p.team=null; p.isLead=false; });
+
+  // Sort all by VP ascending for lead selection (ties broken randomly)
+  const byVP = [...G.players].sort((a,b)=>{
+    const diff = G.cumVP[a.id]-G.cumVP[b.id];
+    return diff!==0 ? diff : Math.random()-0.5;
+  });
+
+  // Lead 1: lowest VP
+  const lead1 = byVP[0];
+  lead1.team='A'; lead1.isLead=true;
+
+  // Lead 1 picks best partner from unassigned
+  const pool1 = byVP.filter(p=>p.team===null);
+  if(pool1.length > 0){
+    const partner1 = pickBestPartner(pool1);
+    partner1.team='A';
+  }
+
+  // Lead 2: lowest VP among still-unassigned
+  const remaining2 = byVP.filter(p=>p.team===null);
+  if(remaining2.length > 0){
+    const lead2 = remaining2[0]; // already sorted by VP
+    lead2.team='B'; lead2.isLead=true;
+
+    // Lead 2 picks best partner from unassigned
+    const pool2 = byVP.filter(p=>p.team===null);
+    if(pool2.length > 0){
+      const partner2 = pickBestPartner(pool2);
+      partner2.team='B';
+    }
+  }
+
+  // Remaining players alternate A/B picks by best BT strength
+  let turn = 0; // 0 = lead1's team, 1 = lead2's team
+  let unassigned = byVP.filter(p=>p.team===null);
+  while(unassigned.length > 0){
+    const targetTeam = turn%2===0 ? 'A' : 'B';
+    const pick = pickBestPartner(unassigned);
+    pick.team = targetTeam;
+    turn++;
+    unassigned = byVP.filter(p=>p.team===null);
+  }
+
+  // Set trick leader
+  if(G.nextHandLeader !== null){
+    G.trickLeader = G.nextHandLeader;
+  } else {
+    G.trickLeader = lead1.id;
+  }
+  G.currentPlayerIdx = G.trickLeader;
 }
 
-function renderInlineSageBar() {
-  return `<div class="panel" style="padding:12px; margin:10px 0; border-color:var(--gold);">
-    <strong>✦ The Sage — pick a rank:</strong>
-    <div class="bid-choices" style="margin-top:10px;">
-      ${[8, 9, 10].map(r => `<button onclick="finishSageActivation(0,'${G.pendingSage.cardId}',${r})">Rank ${r}</button>`).join('')}
-    </div>
-  </div>`;
+// ══════════════════════════════════════════════════════════
+//  GAME LOG
+// ══════════════════════════════════════════════════════════
+function addLog(msg,cls='') {
+  const el=document.getElementById('log-bar');
+  const entry=document.createElement('div');
+  entry.className=`log-entry${cls?' '+cls:''}`;
+  entry.textContent=msg;
+  el.appendChild(entry);
+  el.scrollLeft=el.scrollWidth;
+  // Keep last 20
+  while(el.children.length>20) el.removeChild(el.firstChild);
 }
 
-function humanBid(b) {
-  submitBid(0, b);
-  render();
-  maybeAdvanceBidding();
+// ══════════════════════════════════════════════════════════
+//  MODAL
+// ══════════════════════════════════════════════════════════
+function showModal(title,body,options,btns) {
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-body').textContent=body;
+  const optsEl=document.getElementById('modal-options');
+  optsEl.innerHTML='';
+  options.forEach(o=>{
+    const btn=document.createElement('button'); btn.className='modal-opt';
+    btn.textContent=o.label; btn.onclick=o.action;
+    optsEl.appendChild(btn);
+  });
+  const btnsEl=document.getElementById('modal-btns');
+  btnsEl.innerHTML='';
+  btns.forEach(b=>{
+    const btn=document.createElement('button'); btn.className=`modal-btn ${b.cls||'secondary'}`;
+    btn.textContent=b.label; btn.onclick=b.action;
+    btnsEl.appendChild(btn);
+  });
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+function hideModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
 }
 
-function renderHandSummaryModal() {
-  const div = document.createElement('div');
-  div.className = 'msg-modal';
-  let rows = G.players.map(p => `
-    <tr>
-      <td style="color:${teamColor(p.team)}; font-weight:700;">${p.name}</td>
-      <td style="color:${teamColor(p.team)}; font-weight:700;">${teamLabel(p.team)}</td>
-      <td>${p.bid}</td>
-      <td>${p.tricksWon}</td>
-      <td class="${p.madeBidThisHand ? 'made-bid' : 'missed-bid'}">${p.madeBidThisHand ? 'Made' : 'Missed'}</td>
-      <td class="vp-star">${Math.round(p.lastHand.starVP)}</td>
-      <td class="vp-skull">${Math.round(p.lastHand.skullVP)}</td>
-      <td class="vp-arrow">${Math.round(p.lastHand.arrowVP)}${p.arrowVoided ? ` <span style="color:var(--red); font-size:11px;">(voided ${Math.round(p.arrowVoided)})</span>` : ''}</td>
-      <td class="${p.lastHand.bidVP >= 0 ? 'made-bid' : 'missed-bid'}">${p.lastHand.bidVP >= 0 ? '+' : ''}${p.lastHand.bidVP}</td>
-      <td><strong>${p.lastHand.total >= 0 ? '+' : ''}${Math.round(p.lastHand.total)}</strong></td>
-      <td><strong>${Math.round(p.vp)}</strong></td>
-    </tr>`).join('');
-  div.innerHTML = `<div class="msg-box" style="max-width:720px;">
-    <h3>Round ${G.roundNum} Results</h3>
-    <div style="overflow-x:auto;">
-    <table class="scoreboard">
-      <tr><th>Player</th><th>Team</th><th>Bid</th><th>Won</th><th>Result</th><th>★</th><th>☠</th><th>▲</th><th>Bid VP</th><th>Hand VP</th><th>Grand Total</th></tr>
-      ${rows}
-    </table>
-    </div>
-    <div class="btn-row" style="justify-content:center; margin-top:16px;">
-      <button onclick="continueGame()">Continue</button>
-    </div>
-  </div>`;
-  document.getElementById('app').appendChild(div);
+// ══════════════════════════════════════════════════════════
+//  REVEAL TOOLTIP
+// ══════════════════════════════════════════════════════════
+let _rvTooltipOpen = false;
+function setupRevealTooltips() {
+  for(let i=0;i<6;i++){
+    const slotEl = document.getElementById(`rv${i}`);
+    slotEl.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      showRevealTooltip(i, e);
+    });
+  }
+  document.addEventListener('click', hideRevealTooltip);
 }
 
-function continueGame() {
-  newHand();
-  render();
-  advanceGameFlow();
+function showRevealTooltip(idx, e) {
+  const effect = EFFECTS[idx];
+  const reveal = G.reveals[idx];
+  const tt = document.getElementById('rv-tooltip');
+  document.getElementById('rvt-effect').textContent = `${idx+1}. ${effect}`;
+  document.getElementById('rvt-desc').textContent = EFFECT_DETAIL[effect]||'';
+  const filledEl = document.getElementById('rvt-filled');
+  if(reveal){
+    const ri = RANK_INFO[G.pivotRank];
+    const triggerer = G.players[reveal.playerIdx];
+    filledEl.textContent = `Triggered by ${triggerer.name} — ${ri?ri.name:''} of ${reveal.suit}`;
+  } else {
+    filledEl.textContent = 'Not yet triggered this hand.';
+  }
+  tt.classList.remove('hidden');
+  // Position near the tapped slot, keep on screen
+  const rect = e.currentTarget.getBoundingClientRect();
+  let top = rect.bottom + 6;
+  let left = rect.left;
+  if(left + 230 > window.innerWidth) left = window.innerWidth - 235;
+  if(top + 120 > window.innerHeight) top = rect.top - 120;
+  tt.style.top = top+'px';
+  tt.style.left = left+'px';
+  _rvTooltipOpen = true;
 }
 
-function renderGameEnd() {
-  const sorted = G.players.slice().sort((a, b) => b.vp - a.vp);
-  return `<div class="panel">
-    <h1 class="title">Game Over</h1>
-    <table class="scoreboard">
-      <tr><th>Rank</th><th>Player</th><th>VP</th></tr>
-      ${sorted.map((p, i) => `<tr><td>${i+1}</td><td>${p.name}</td><td>${Math.round(p.vp)}</td></tr>`).join('')}
-    </table>
-    <div class="btn-row"><button onclick="location.reload()">New Game</button></div>
-  </div>`;
+function hideRevealTooltip() {
+  document.getElementById('rv-tooltip').classList.add('hidden');
+  _rvTooltipOpen = false;
 }
 
-render();
+// ══════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════
+_pc=5;
+document.querySelectorAll('.pc-btn').forEach((b,i)=>b.classList.toggle('active',[3,4,5,6][i]===5));
+buildPlayerSlots();
+setupRevealTooltips();
+showScreen('setup-screen');
 </script>
 </body>
 </html>
